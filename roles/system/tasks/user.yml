@@ -1,0 +1,18 @@
+---
+# User sudoers configuration tasks
+
+- name: Get current user information
+  set_fact:
+    current_user: "{{ ansible_user | default(ansible_user_id) | default(ansible_env.USER) | default(ansible_env.LOGNAME) }}"
+  tags: system
+
+- name: Add current user to sudoers with NOPASSWD
+  copy:
+    content: "{{ current_user }} ALL=(ALL) NOPASSWD:ALL"
+    dest: "/etc/sudoers.d/{{ current_user }}"
+    mode: '0440'
+    owner: root
+    group: root
+    validate: 'visudo -cf %s'
+  become: true
+  tags: system

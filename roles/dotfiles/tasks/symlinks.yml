@@ -1,0 +1,10 @@
+---
+# Symlink-based dotfiles deployment
+
+- name: create symlinks for dotfiles
+  file:
+    src: "{{ playbook_dir }}/dotfiles/{{ item.src }}"
+    dest: "{{ ansible_env.HOME }}/{{ item.dest }}"
+    state: link
+  loop: "{{ dotfile_mappings }}"
+  tags: dotfiles

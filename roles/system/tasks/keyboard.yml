@@ -1,0 +1,27 @@
+---
+# Keyboard configuration tasks
+
+- name: set system keyboard layout to French
+  lineinfile:
+    path: /etc/default/keyboard
+    regexp: '^XKBLAYOUT='
+    line: 'XKBLAYOUT="fr"'
+    create: yes
+  become: true
+
+- name: set system keyboard model
+  lineinfile:
+    path: /etc/default/keyboard
+    regexp: '^XKBMODEL='
+    line: 'XKBMODEL="pc105"'
+    create: yes
+  become: true
+
+- name: apply system keyboard configuration
+  shell: |
+    export DEBIAN_FRONTEND=noninteractive
+    dpkg-reconfigure -f noninteractive keyboard-configuration 2>/dev/null || true
+    udevadm trigger --subsystem-match=input --action=change || true
+  become: true
+  changed_when: false
+  timeout: 30

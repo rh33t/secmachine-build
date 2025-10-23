@@ -1,0 +1,36 @@
+---
+- name: update package cache
+  package:
+    update_cache: yes
+  become: true
+
+- name: install apt packages
+  package:
+    name:
+      - bettercap
+      - commix
+      - copyq
+      - curl
+      - ghidra
+      - vim
+      - git
+      - gitk
+      - gobuster
+      - htop
+      - jq
+      - nodejs
+      - npm
+      - python3-pip
+      - ranger
+      - ripgrep
+      - rofi
+      - seclists
+      - stow
+      - tmux
+      - xsel
+      - zoxide
+      - zsh
+      - zsh-syntax-highlighting
+      - zsh-autosuggestions
+    state: present
+  become: true

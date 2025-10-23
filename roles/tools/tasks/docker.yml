@@ -1,0 +1,91 @@
+---
+- name: "Remove unofficial docker images"
+  package:
+    name: 
+      - docker.io
+      - docker-compose
+      - docker-doc
+      - podman-docker
+    state: absent
+  register: docker_remove
+  become: true
+  become_method: sudo
+
+- name: "Remove Containerd/Runc"
+  package:
+    name: 
+      - containerd
+      - runc
+    state: absent
+  when: docker_remove.changed
+  become: true
+  become_method: sudo
+
+- name: "Installing Packages"
+  package:
+    name:
+      - jq
+      - pipx
+      - exiftool
+      - ca-certificates
+      - curl
+    state: latest
+  become: true
+  become_method: sudo
+
+- name: "Create apt keyrings directory"
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  become: true
+  become_method: sudo
+
+- name: "Download Docker GPG key"
+  get_url:
+    url: "https://download.docker.com/linux/debian/gpg"
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+  become: true
+  become_method: sudo
+
+- name: "Install Docker Repository"
+  apt_repository:
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ distribution }} stable"
+    state: present
+    update_cache: yes
+  become: true
+  become_method: sudo
+
+- name: "Upgrade all packages"
+  apt: upgrade=yes force_apt_get=yes
+  become: true
+  become_method: sudo
+
+- name: "Install Docker"
+  package:
+    name: 
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: latest
+  become: true
+  become_method: sudo
+
+- name: disable docker from starting on boot to preserve resources
+  systemd:
+    name: docker
+    enabled: no
+    state: stopped
+  become: true
+  become_method: sudo
+
+- name: disable containerd from starting on boot
+  systemd:
+    name: containerd
+    enabled: no
+    state: stopped
+  become: true
+  become_method: sudo

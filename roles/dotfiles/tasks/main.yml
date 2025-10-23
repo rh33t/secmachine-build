@@ -1,0 +1,16 @@
+---
+# Dotfiles deployment main tasks
+
+- name: common dotfiles preparation
+  include_tasks: common.yml
+  tags: dotfiles
+
+- name: deploy dotfiles via symlinks
+  include_tasks: symlinks.yml
+  when: dotfiles_use_symlinks | default(true) | bool
+  tags: dotfiles
+
+- name: deploy dotfiles via copying
+  include_tasks: copy.yml
+  when: not (dotfiles_use_symlinks | default(true) | bool)
+  tags: dotfiles

@@ -1,0 +1,9 @@
+---
+fonts:
+  - name: "JetBrainsMono"
+    url: "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip"
+    dir: "/usr/share/fonts/truetype/jetbrains-mono-nerd"
+  - name: "Roboto"
+    url: "https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip"
+    dir: "/usr/share/fonts/truetype/roboto"
+temp_base_dir: "/tmp/font-downloads"

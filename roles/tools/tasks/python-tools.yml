@@ -1,0 +1,23 @@
+---
+
+- name: install pipx via apt
+  apt:
+    name: pipx
+    state: present
+  become: true
+
+- name: install python security tools via pipx
+  community.general.pipx:
+    name: "{{ item.name }}"
+    source: "{{ item.url | default(omit) }}"
+    state: latest
+  loop:
+    - { name: "impacket", url: "git+https://github.com/fortra/impacket.git" }
+
+- name: install python ctf tools via pipx
+  community.general.pipx:
+    name: "{{ item.name }}"
+    source: "{{ item.url | default(omit) }}"
+    state: latest
+  loop:
+    - { name: "pwntools" }

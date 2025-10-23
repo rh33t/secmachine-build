@@ -1,0 +1,21 @@
+---
+# Copy-based dotfiles deployment
+
+- name: copy dotfiles instead of symlinking
+  copy:
+    src: "{{ playbook_dir }}/dotfiles/{{ item.src }}"
+    dest: "{{ ansible_env.HOME }}/{{ item.dest }}"
+    mode: preserve
+  loop: "{{ dotfile_mappings }}"
+  when: item.type == "file"
+  tags: dotfiles
+
+- name: copy dotfile directories instead of symlinking
+  synchronize:
+    src: "{{ playbook_dir }}/dotfiles/{{ item.src }}/"
+    dest: "{{ ansible_env.HOME }}/{{ item.dest }}/"
+    delete: true
+    recursive: true
+  loop: "{{ dotfile_mappings }}"
+  when: item.type == "directory"
+  tags: dotfiles

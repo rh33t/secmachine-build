@@ -1,0 +1,13 @@
+---
+- name: install kitty terminal emulator
+  package:
+    name:
+      - kitty
+    state: present
+  become: true
+
+- name: set kitty as default x-terminal-emulator
+  alternatives:
+    name: x-terminal-emulator
+    path: /usr/bin/kitty
+  become: true

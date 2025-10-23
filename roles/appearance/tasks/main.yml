@@ -1,0 +1,6 @@
+---
+- name: Download and install fonts
+  include_tasks: fonts.yml
+
+- name: setup wallpapers
+  include_tasks: wallpaper.yml

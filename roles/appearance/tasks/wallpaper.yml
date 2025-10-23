@@ -1,0 +1,6 @@
+- name: "copy background image to system wallpapers (hackthebox wallpaper)"
+  become: true
+  copy:
+    src: htb.jpg
+    dest: /usr/share/wallpapers/htb.jpg
+    mode: '0644'

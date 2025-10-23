@@ -1,0 +1,110 @@
+---
+- name: set keyboard layout to French system-wide
+  dconf:
+    key: /org/mate/desktop/peripherals/keyboard/kbd/layouts
+    value: "{{ keyboard_layouts | to_json }}"
+    state: present
+  tags: mate
+
+- name: set window button layout (close/minimize on right)
+  dconf:
+    key: /org/mate/marco/general/button-layout
+    value: "'{{ window_button_layout }}'"
+    state: present
+  tags: mate
+
+- name: set system font to Roboto
+  dconf:
+    key: /org/mate/desktop/interface/font-name
+    value: "'{{ system_font }}'"
+    state: present
+  tags: mate
+
+- name: set monospace font to JetBrains Mono
+  dconf:
+    key: /org/mate/desktop/interface/monospace-font-name
+    value: "'{{ monospace_font }}'"
+    state: present
+  tags: mate
+
+- name: set document font to Roboto
+  dconf:
+    key: /org/mate/desktop/interface/document-font-name
+    value: "'{{ document_font }}'"
+    state: present
+  tags: mate
+
+- name: set desktop font to Roboto
+  dconf:
+    key: /org/mate/caja/desktop/font
+    value: "'{{ desktop_font }}'"
+    state: present
+  tags: mate
+
+- name: set terminal font to JetBrains Mono
+  dconf:
+    key: /org/mate/terminal/profiles/default/font
+    value: "'{{ monospace_font }}'"
+    state: present
+  tags: mate
+
+- name: enable custom terminal font
+  dconf:
+    key: /org/mate/terminal/profiles/default/use-system-font
+    value: "false"
+    state: present
+  tags: mate
+
+- name: set gtk theme
+  dconf:
+    key: /org/mate/desktop/interface/gtk-theme
+    value: "'{{ gtk_theme }}'"
+    state: present
+  tags: mate
+
+- name: set window keybinding - close window with Win+Q
+  dconf:
+    key: /org/mate/marco/window-keybindings/close
+    value: "'<Super>q'"
+    state: present
+  tags: mate
+
+- name: set window keybinding - toggle fullscreen with Win+F
+  dconf:
+    key: /org/mate/marco/window-keybindings/toggle-fullscreen
+    value: "'<Super>f'"
+    state: present
+  tags: mate
+
+- name: clear any conflicting Alt+T key bindings
+  dconf:
+    key: "{{ item }}"
+    state: absent
+  loop:
+    - /org/mate/desktop/keybindings/custom0/binding
+    - /org/mate/desktop/keybindings/custom1/binding
+    - /org/mate/desktop/keybindings/custom4/binding
+    - /org/mate/desktop/keybindings/custom5/binding
+  when: item not in ['/org/mate/desktop/keybindings/custom2/binding', '/org/mate/desktop/keybindings/custom3/binding']
+  tags: mate
+
+- name: set keyboard shortcut - launch kitty with tmux (Alt+t)
+  dconf:
+    key: /org/mate/desktop/keybindings/custom2/name
+    value: "'Launch Kitty with Tmux'"
+    state: present
+  tags: mate
+
+- name: set keyboard shortcut - launch kitty with tmux binding
+  dconf:
+    key: /org/mate/desktop/keybindings/custom2/binding
+    value: "'<Alt>t'"
+    state: present
+  tags: mate
+
+- name: set keyboard shortcut - launch kitty with tmux action
+  dconf:
+    key: /org/mate/desktop/keybindings/custom2/action
+    value: "'kitty zsh -c \"tmux attach || tmux new -s daily\"'"
+    state: present
+  tags: mate

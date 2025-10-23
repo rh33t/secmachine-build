@@ -1,0 +1,6 @@
+---
+go_version: "1.25.3"
+go_download_url: "https://go.dev/dl/go{{ go_version }}.linux-amd64.tar.gz"
+go_install_dir: "/usr/local"
+# i don't want to install go tools by default
+install_tools: false

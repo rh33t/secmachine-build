@@ -1,0 +1,10 @@
+---
+# System scripts installation tasks
+
+- name: install host-entry script
+  copy:
+    src: host-entry
+    dest: /usr/local/bin/host-entry
+    mode: '0755'
+  become: true
+  tags: system

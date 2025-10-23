@@ -1,0 +1,16 @@
+---
+# Timezone configuration tasks
+
+- name: set system timezone to {{ system_timezone }}
+  timezone:
+    name: "{{ system_timezone }}"
+  become: true
+
+- name: verify timezone configuration
+  command: timedatectl show --property=Timezone --value
+  register: current_timezone
+  changed_when: false
+
+- name: display current timezone
+  debug:
+    msg: "System timezone is set to: {{ current_timezone.stdout }}"

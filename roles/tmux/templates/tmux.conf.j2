@@ -1,0 +1,101 @@
+# set the prefix to ctrl+s
+unbind C-s
+set -g prefix C-s
+
+# terminal settings with true color support
+set -g default-terminal "tmux-256color"
+set -ga terminal-overrides ",tmux-256color:Tc"
+
+set -g history-limit 5000
+
+# enable xterm key bindings
+set-window-option -g xterm-keys on
+
+# new panes configuration
+unbind '"'
+bind o split-window -v -c "#{pane_current_path}"
+unbind %
+bind e split-window -h -c "#{pane_current_path}"
+bind-key v split-window -h
+bind-key b split-window
+
+# toggle statusline with b key
+bind b set-option status
+
+# key bindings for copy mode and navigation
+bind-key a copy-mode
+setw -g mode-keys vi
+# this is fucking working i dunno why just keep it for now
+bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "xclip -sel clip -i"
+set -g copy-command 'xclip -sel clip -i'
+
+# switch panes using alt-arrow keys without prefix key
+bind -n M-Left select-pane -L
+bind -n M-Right select-pane -R
+bind -n M-Up select-pane -U
+bind -n M-Down select-pane -D
+
+# switch windows using shift-arrow keys
+bind -n S-Left previous-window
+bind -n S-Right next-window
+
+# resize panes with ctrl+shift and arrow keys
+bind -n C-s-Left resize-pane -L 5
+bind -n C-s-Right resize-pane -R 5
+bind -n C-s-Up resize-pane -U 5
+bind -n C-s-Down resize-pane -D 5
+bind -n C-S-Left resize-pane -L 10
+bind -n C-S-Right resize-pane -R 10
+bind -n C-S-Up resize-pane -U 10
+bind -n C-S-Down resize-pane -D 10
+
+# reload config
+bind-key r source-file ~/.tmux.conf \; display-message "~/.tmux.conf reloaded."
+
+# create a new session with a custom name, defaulting to the basename of the current working directory
+bind-key S command-prompt -p "session name [start in cwd]:" -I "#{s|.*/||:pane_current_path}" "new-session -s '%%' -c '#{pane_current_path}'"
+
+# create a new window with the current directory as start directory
+bind C new-window -c "#{pane_current_path}"
+
+# use hjkl for pane traversal
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+# enable mouse support
+setw -g mouse on
+
+# set window split and base index
+set -g base-index 1
+setw -g aggressive-resize on
+
+# status bar configuration
+set -g status-interval 1
+set -g status-left-length 200
+set -g status-right-length 40
+set -g status-left '#[fg=red]   #[fg=green][#S] #[fg=green]• #(~/.bin/vpn-status.sh)  '
+set -g status-right '#[default]#[fg=blue]{{ ansible_user_id }}'
+
+# colors and styles
+set-option -g status-style bg=default,fg=colour136
+set-window-option -g window-status-style fg=colour244,bg=default,dim
+set-window-option -g window-status-current-style fg=#0B6DB3,bg=default,bright
+set-option -g pane-border-style "fg=#32344a"
+set-option -g pane-active-border-style "fg=#0B6DB3"
+set-option -g message-style "bg=#1a1b26,fg=#7dcfff"
+set-option -g display-panes-active-colour "#0B6DB3"
+set-option -g display-panes-colour "#7dcfff"
+set-window-option -g clock-mode-colour green
+
+# windows format
+set -g window-status-current-format ' #W'
+set -g window-status-format '#I: #W'
+
+# allows for faster key repetition
+set -s escape-time 50
+
+# auto window rename
+set -g automatic-rename on
+set -g set-titles on

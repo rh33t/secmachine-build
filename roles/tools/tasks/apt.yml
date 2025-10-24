@@ -12,6 +12,7 @@
       - copyq
       - curl
       - ghidra
+      - gdb
       - vim
       - git
       - gitk

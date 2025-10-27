@@ -56,6 +56,13 @@
   loop_control:
     label: "{{ item.item.name }}"
 
+- name: set gsettings monospace font to jetbrains mono
+  community.general.dconf:
+    key: "/org/gnome/desktop/interface/monospace-font-name"
+    value: "'JetBrainsMono NF 13'"
+    state: present
+  become: false
+
 - name: Update font cache
   become: true
   command: fc-cache -f -v

@@ -1,0 +1,26 @@
+# wireshark configuration
+---
+- name: Install Wireshark package
+  apt:
+    name: wireshark
+    state: present
+  become: true
+
+- name: Ensure Wireshark config directory exists
+  file:
+    path: "{{ ansible_env.HOME }}/.config/wireshark"
+    state: directory
+    mode: '0755'
+
+- name: Ensure preferences file exists
+  file:
+    path: "{{ ansible_env.HOME }}/.config/wireshark/preferences"
+    state: touch
+    mode: '0644'
+
+- name: Set Wireshark font in global preferences
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.config/wireshark/preferences"
+    regexp: '^gui\.qt\.font_name:'
+    line: 'gui.qt.font_name: JetBrainsMono Nerd Font,13,-1,5,400,0,0,0,0,0,0,0,0,0,0,1'
+    create: true

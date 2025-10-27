@@ -89,3 +89,11 @@
     state: stopped
   become: true
   become_method: sudo
+
+- name: add user to docker group
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    groups: docker
+    append: true
+  tags: extra_docker

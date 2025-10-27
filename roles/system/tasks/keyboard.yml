@@ -17,6 +17,15 @@
     create: yes
   become: true
 
+- name: swap escape and capslock keys
+  lineinfile:
+    path: /etc/default/keyboard
+    regexp: '^XKBOPTIONS='
+    line: 'XKBOPTIONS="caps:swapescape"'
+    create: yes
+  become: true
+  when: baremetal
+
 - name: apply system keyboard configuration
   shell: |
     export DEBIAN_FRONTEND=noninteractive

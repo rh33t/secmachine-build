@@ -9,6 +9,8 @@ Automates my pentesting environment on Kali.
 - Go security tools - disabled by default
 - Workflow tools (Neovim, Tmux, Python)
 - Custom scripts for common tasks
+- Automatic Burpsuite certificate installation (Firefox)
+- Firefox configuration (extensions, policies)
 - Dotfiles and appearance (copy mode by default, symlinks available)
 
 ## Usage
@@ -21,9 +23,3 @@ make create-structure
 # Check syntax
 make check             
 ```
-
-## Compatibility
-
-- **Kali Linux**: Works great, fully tested
-
-## I'll work later on parrot version

@@ -1,5 +1,6 @@
 ---
 # run with : ansible-playbook -i inventory playbook.yml --ask-become-pass
+# min 1GB in /tmp for nvim build and other stuff
 # on a fresh kali install
 
 - name: setup hacking environment

@@ -41,4 +41,7 @@ config.keys = {
 
 -- config.window_frame = theme.window_frame()
 
+-- disable gpu rendering for vm
+config.front_end = "Software"
+
 return config

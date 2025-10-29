@@ -1,13 +1,28 @@
 ---
-- name: install kitty terminal emulator
-  package:
-    name:
-      - kitty
-    state: present
-  become: true
+- name: Ensure keyring directory exists
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
 
-- name: set kitty as default x-terminal-emulator
-  alternatives:
-    name: x-terminal-emulator
-    path: /usr/bin/kitty
-  become: true
+- name: Download WezTerm GPG key
+  ansible.builtin.get_url:
+    url: https://apt.fury.io/wez/gpg.key
+    dest: /etc/apt/keyrings/wezterm-fury.gpg
+    mode: '0644'
+
+- name: Add WezTerm APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *"
+    filename: wezterm
+    state: present
+    mode: '0644'
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install WezTerm
+  ansible.builtin.apt:
+    name: wezterm
+    state: present

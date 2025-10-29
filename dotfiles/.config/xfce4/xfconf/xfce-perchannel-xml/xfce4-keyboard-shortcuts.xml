@@ -68,7 +68,7 @@
       <property name="&lt;Super&gt;e" type="string" value="exo-open --launch FileManager"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;Print" type="string" value="/usr/share/kali-themes/xfce4-screenshooter --window --clipboard"/>
       <property name="XF86WWW" type="string" value="exo-open --launch WebBrowser"/>
-      <property name="&lt;Super&gt;Return" type="string" value="qterminal  -e zsh -c &quot;tmux attach || tmux new -s daily&quot;"/>
+      <property name="&lt;Super&gt;Return" type="string" value="wezterm"/>
       <property name="&lt;Super&gt;space" type="string" value="rofi -show drun ~/.config/rofi/config.rasi"/>
     </property>
   </property>

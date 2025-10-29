@@ -6,13 +6,13 @@
     dotfile_mappings:
       # root dotfiles
       - { src: ".triplea.zsh", dest: ".triplea.zsh", type: "file" }
-      
+      - { src: ".wezterm.lua", dest: ".wezterm.lua", type: "file" }
+
       # config directories
       - { src: ".config/nvim", dest: ".config/nvim", type: "directory" }
-      # - { src: ".config/kitty", dest: ".config/kitty", type: "directory" }
       - { src: ".config/qterminal.org", dest: ".config/qterminal.org", type: "directory" }
       - { src: ".config/fontconfig", dest: ".config/fontconfig", type: "directory" }
-      
+
       # essential xfce4 configuration files only
       - { src: ".config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml", dest: ".config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml", type: "file" }
       - { src: ".config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml", dest: ".config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml", type: "file" }
@@ -20,7 +20,7 @@
       - { src: ".config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml", dest: ".config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml", type: "file" }
       - { src: ".config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml", dest: ".config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml", type: "file" }
       - { src: ".config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml", dest: ".config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml", type: "file" }
-      
+
       # local directories
       - { src: ".bin", dest: ".bin", type: "directory" }
   tags: dotfiles

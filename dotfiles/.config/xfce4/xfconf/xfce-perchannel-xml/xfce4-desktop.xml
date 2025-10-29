@@ -18,7 +18,6 @@
           <value type="uint" value="65535"/>
         </property>
         <property name="color-style" type="empty"/>
-        <property name="image-path" type="string" value="/usr/share/wallpapers/htb.jpg"/>
         <property name="image-show" type="empty"/>
         <property name="last-image" type="empty"/>
         <property name="last-single-image" type="empty"/>

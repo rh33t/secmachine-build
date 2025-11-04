@@ -1,5 +1,5 @@
 ---
-window_button_layout: 'menu:minimize,maximize,close'
+window_button_layout: ':minimize,maximize,close'
 
 system_font: 'Roboto 12'
 monospace_font: 'JetBrainsMono Nerd Font Medium 14'

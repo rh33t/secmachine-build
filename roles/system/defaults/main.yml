@@ -1,5 +1,2 @@
 ---
-# default variables for system role
-
-# Timezone configuration
 system_timezone: "Africa/Porto-Novo"

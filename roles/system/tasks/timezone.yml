@@ -1,6 +1,4 @@
 ---
-# Timezone configuration tasks
-
 - name: set system timezone to {{ system_timezone }}
   timezone:
     name: "{{ system_timezone }}"

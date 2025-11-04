@@ -1,37 +1,48 @@
 ---
-- name: update package cache
-  package:
-    update_cache: yes
+- name: Upgrade all apt packages
+  ansible.builtin.apt:
+    upgrade: dist
+    update_cache: true
+    cache_valid_time: 3600
+    autoremove: true
+    autoclean: true
   become: true
+  tags: apt
 
-- name: install apt packages
-  package:
+- name: Install apt packages
+  ansible.builtin.apt:
     name:
       - bettercap
-      - commix
-      - copyq
-      - curl
-      - ghidra
-      # - gdb
-      - vim
-      - git
-      - gitk
       - gobuster
+      - commix
+      - seclists
+      - ghidra
+      - build-essential
+      - curl
+      - git
+      - vim
       - htop
       - jq
+      - ripgrep
+      - stow
+      - xsel
+      - zoxide
+      - copyq
+      - ranger
+      - rofi
+      - gitk
       - nodejs
       - npm
       - python3-pip
-      - ranger
-      - ripgrep
-      - rofi
-      - seclists
-      - stow
-      - tmux
-      - xsel
-      - zoxide
-      - zsh
-      - zsh-syntax-highlighting
-      - zsh-autosuggestions
     state: present
+    update_cache: true
+    cache_valid_time: 3600
   become: true
+  tags: apt
+
+- name: Remove unused apt packages
+  ansible.builtin.apt:
+    autoremove: true
+    purge: true
+  become: true
+  tags: apt

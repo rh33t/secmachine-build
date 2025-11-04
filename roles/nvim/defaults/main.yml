@@ -1,4 +1,0 @@
----
-nvim_repo_url: "https://github.com/neovim/neovim.git"
-nvim_build_dir: "/tmp/neovim"
-nvim_build_type: "RelWithDebInfo"

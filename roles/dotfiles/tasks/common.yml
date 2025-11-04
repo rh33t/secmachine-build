@@ -1,6 +1,4 @@
 ---
-# Common dotfiles preparation tasks
-
 - name: define dotfile mappings
   set_fact:
     dotfile_mappings:

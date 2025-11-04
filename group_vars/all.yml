@@ -1,2 +1,3 @@
 # this var indicates if the target is a physical machine
+# so that we can adjust certain settings accordingly
 baremetal: false

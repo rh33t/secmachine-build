@@ -1,6 +1,6 @@
 ---
-- name: "Remove unofficial docker images"
-  package:
+- name: remove unofficial docker packages
+  apt:
     name: 
       - docker.io
       - docker-compose
@@ -9,61 +9,60 @@
     state: absent
   register: docker_remove
   become: true
-  become_method: sudo
+  tags: docker
 
-- name: "Remove Containerd/Runc"
-  package:
+- name: remove containerd/runc if docker was removed
+  apt:
     name: 
       - containerd
       - runc
     state: absent
   when: docker_remove.changed
   become: true
-  become_method: sudo
+  tags: docker
 
-- name: "Installing Packages"
-  package:
+- name: install docker prerequisites
+  apt:
     name:
-      - jq
-      - pipx
-      - exiftool
       - ca-certificates
       - curl
     state: latest
   become: true
-  become_method: sudo
+  tags: docker
 
-- name: "Create apt keyrings directory"
+- name: create apt keyrings directory
   file:
     path: /etc/apt/keyrings
     state: directory
     mode: '0755'
   become: true
-  become_method: sudo
+  tags: docker
 
-- name: "Download Docker GPG key"
+- name: download docker GPG key
   get_url:
     url: "https://download.docker.com/linux/debian/gpg"
     dest: /etc/apt/keyrings/docker.asc
     mode: '0644'
   become: true
-  become_method: sudo
+  tags: docker
 
-- name: "Install Docker Repository"
+- name: install docker repository
   apt_repository:
-    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ distribution }} stable"
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ docker_distribution }} stable"
     state: present
-    update_cache: yes
+    update_cache: true
   become: true
-  become_method: sudo
+  tags: docker
 
-- name: "Upgrade all packages"
-  apt: upgrade=yes force_apt_get=yes
+- name: upgrade all packages
+  apt: 
+    upgrade: true 
+    force_apt_get: true
   become: true
-  become_method: sudo
+  tags: docker
 
-- name: "Install Docker"
-  package:
+- name: install docker packages
+  apt:
     name: 
       - docker-ce
       - docker-ce-cli
@@ -72,28 +71,28 @@
       - docker-compose-plugin
     state: latest
   become: true
-  become_method: sudo
+  tags: docker
 
 - name: disable docker from starting on boot to preserve resources
   systemd:
     name: docker
-    enabled: no
+    enabled: false
     state: stopped
   become: true
-  become_method: sudo
+  tags: docker
 
 - name: disable containerd from starting on boot
   systemd:
     name: containerd
-    enabled: no
+    enabled: false
     state: stopped
   become: true
-  become_method: sudo
+  tags: docker
 
 - name: add user to docker group
-  become: true
-  ansible.builtin.user:
+  user:
     name: "{{ ansible_user_id }}"
     groups: docker
     append: true
-  tags: extra_docker
+  become: true
+  tags: docker

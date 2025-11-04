@@ -1,16 +1,4 @@
 ---
-# System configuration tasks
-
-- name: update apt cache
-  apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
-  become: true
-  become_method: sudo
-
-- name: upgrade all packages
-  apt: upgrade=yes force_apt_get=yes
-  become: true
-  become_method: sudo
-
 - name: configure user sudoers
   include_tasks: user.yml
   tags: system

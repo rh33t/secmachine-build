@@ -1,19 +1,15 @@
 ---
-# run with : ansible-playbook -i inventory playbook.yml --ask-become-pass
-# min 1GB in /tmp for nvim build and other stuff
-# on a fresh kali install
-
 - name: setup hacking environment
   hosts: localhost
   connection: local
 
   roles:
-    - system
-    - tools
-    - tmux
-    - nvim
-    - appearance
-    - firefox
-    - mate
-    - dotfiles
-    - gotools
+  - system
+  - tools
+  - firefox-burpsuite
+  - terminal
+  - clipboard-manager  
+  - fonts
+  - mate-config
+  - vscode-config
+  - dotfiles

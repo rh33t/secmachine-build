@@ -1,0 +1,27 @@
+---
+- name: ensure VS Code user config directory exists
+  file:
+    path: "/home/{{ ansible_user_id }}/.config/Visual Studio Code/User"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  tags: vscode
+
+- name: copy VS Code keybindings configuration
+  copy:
+    src: vscode-keybindings.json
+    dest: "/home/{{ ansible_user_id }}/.config/Visual Studio Code/User/keybindings.json"
+    mode: '0644'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  tags: vscode
+
+- name: copy VS Code settings configuration
+  copy:
+    src: vscode-settings.json
+    dest: "/home/{{ ansible_user_id }}/.config/Visual Studio Code/User/settings.json"
+    mode: '0644'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  tags: vscode

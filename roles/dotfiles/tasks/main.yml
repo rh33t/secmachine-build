@@ -1,7 +1,5 @@
 ---
-# Dotfiles deployment main tasks
-
-- name: common dotfiles preparation
+- name: common dotfiles tasks preparation
   include_tasks: common.yml
   tags: dotfiles
 

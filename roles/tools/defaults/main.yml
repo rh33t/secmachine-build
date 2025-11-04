@@ -1,2 +1,12 @@
 ---
-distribution: "bookworm"
+docker_distribution: "bookworm"
+
+install_pyenv: true
+
+go_version: "1.25.2"
+go_download_url: "https://go.dev/dl/go{{ go_version }}.linux-amd64.tar.gz"
+go_install_tools: false
+
+nvim_repo_url: "https://github.com/neovim/neovim.git"
+nvim_build_dir: "/tmp/neovim"
+nvim_build_type: "RelWithDebInfo"

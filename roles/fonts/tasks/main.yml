@@ -1,0 +1,84 @@
+---
+- name: ensure fontconfig & unzip is installed
+  apt:
+    name:
+      - fontconfig
+      - unzip
+    state: present
+  become: true
+  tags: fonts
+
+- name: create temporary download directory
+  file:
+    path: "{{ temp_base_dir }}"
+    state: directory
+    mode: '0755'
+  tags: fonts
+
+- name: check if fonts are already installed
+  stat:
+    path: "{{ item.dir }}"
+  register: fonts_installed
+  loop: "{{ fonts }}"
+  loop_control:
+    label: "{{ item.name }}"
+  tags: fonts
+
+- name: create system font directories
+  file:
+    path: "{{ item.item.dir }}"
+    state: directory
+    mode: '0755'
+  when: not item.stat.exists
+  loop: "{{ fonts_installed.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  become: true
+  tags: fonts
+
+- name: download font packages
+  get_url:
+    url: "{{ item.item.url }}"
+    dest: "{{ temp_base_dir }}/{{ item.item.name }}.zip"
+    mode: '0644'
+    timeout: 30
+  when: not item.stat.exists
+  loop: "{{ fonts_installed.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  tags: fonts
+
+- name: extract font files
+  unarchive:
+    src: "{{ temp_base_dir }}/{{ item.item.name }}.zip"
+    dest: "{{ item.item.dir }}"
+    remote_src: true
+    include: "*.ttf"
+    extra_opts: ["-j"]
+  when: not item.stat.exists
+  loop: "{{ fonts_installed.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  become: true
+  tags: fonts
+
+- name: set gsettings monospace font to jetbrains mono
+  community.general.dconf:
+    key: "/org/gnome/desktop/interface/monospace-font-name"
+    value: "'JetBrainsMono NF 13'"
+    state: present
+  become: false
+  tags: fonts
+
+- name: update font cache
+  command: fc-cache -f -v
+  when: fonts_installed.results | selectattr('stat.exists', 'equalto', false) | list | length > 0
+  changed_when: true
+  become: true
+  tags: fonts
+
+- name: clean up temporary files
+  file:
+    path: "{{ temp_base_dir }}"
+    state: absent
+  tags: fonts

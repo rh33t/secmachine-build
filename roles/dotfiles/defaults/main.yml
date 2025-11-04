@@ -1,7 +1,5 @@
 ---
-# Default variables for dotfiles role
-
 # Method for dotfiles deployment
-# true: create symlinks (default, allows live editing)
+# true: create symlinks (requires source files)
 # false: copy files (standalone, no dependency on source)
 dotfiles_use_symlinks: false

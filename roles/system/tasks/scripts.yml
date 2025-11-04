@@ -1,6 +1,4 @@
 ---
-# System scripts installation tasks
-
 - name: install host-entry script
   copy:
     src: host-entry

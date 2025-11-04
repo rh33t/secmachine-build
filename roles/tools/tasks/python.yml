@@ -1,0 +1,59 @@
+---
+- name: install python and pip
+  apt:
+    name:
+      - python3-pip
+    state: present
+  become: true
+  tags: python
+
+- name: install pyenv dependencies
+  apt:
+    name:
+      - build-essential
+      - libssl-dev
+      - zlib1g-dev
+      - libbz2-dev
+      - libreadline-dev
+      - libsqlite3-dev
+      - libncurses5-dev
+      - libncursesw5-dev
+      - libffi-dev
+      - liblzma-dev
+      - tk-dev
+      - libgdbm-dev
+      - libnss3-dev
+      - uuid-dev
+    state: present
+  become: true
+  when: install_pyenv | default(false) | bool
+  tags: 
+    - python
+    - pyenv
+
+- name: install pyenv
+  shell: curl -fsSL https://pyenv.run | bash
+  args:
+    creates: "~/.pyenv"
+  when: install_pyenv | default(false) | bool
+  tags: 
+    - python
+    - pyenv
+
+- name: install python security tools via pipx
+  community.general.pipx:
+    name: "{{ item.name }}"
+    source: "{{ item.url | default(omit) }}"
+    state: latest
+  loop:
+    - { name: "impacket", url: "git+https://github.com/fortra/impacket.git" }
+  tags: python
+
+- name: install python ctf tools via pipx
+  community.general.pipx:
+    name: "{{ item.name }}"
+    source: "{{ item.url | default(omit) }}"
+    state: latest
+  loop:
+    - { name: "pwntools" }
+  tags: python

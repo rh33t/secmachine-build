@@ -1,2 +1,0 @@
----
-go_bin_path: "/home/{{ install_user }}/go/bin"

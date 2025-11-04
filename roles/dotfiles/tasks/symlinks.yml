@@ -1,6 +1,4 @@
 ---
-# Symlink-based dotfiles deployment
-
 - name: create symlinks for dotfiles
   file:
     src: "{{ playbook_dir }}/dotfiles/{{ item.src }}"

@@ -1,0 +1,7 @@
+- name: "Updating Firefox Policies"
+  template: 
+    src: "templates/policies.json.j2"
+    # /usr/share/firefox-esr/distribution/policies.json is not working anymore on parrot os idk why
+    dest: "/etc/firefox/policies/policies.json"
+  become: true
+  become_method: sudo

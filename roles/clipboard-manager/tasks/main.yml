@@ -1,0 +1,25 @@
+---
+- name: ensure clipboard manager is installed
+  apt:
+    name: copyq
+    state: present
+  become: true
+  tags: clipboard
+  
+- name: ensure autostart directory exists
+  file:
+    path: "/home/{{ ansible_user_id }}/.config/autostart"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  tags: clipboard
+
+- name: copy copyq autostart file
+  copy:
+    src: copyq.desktop
+    dest: "/home/{{ ansible_user_id }}/.config/autostart/copyq.desktop"
+    mode: '0644'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  tags: clipboard

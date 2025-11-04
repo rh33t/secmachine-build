@@ -1,33 +1,37 @@
-# wireshark configuration
 ---
-- name: Install Wireshark package
+- name: install wireshark
   apt:
     name: wireshark
     state: present
   become: true
+  tags: wireshark
 
-- name: Ensure Wireshark config directory exists
+- name: ensure wireshark config directory exists
   file:
     path: "{{ ansible_env.HOME }}/.config/wireshark"
     state: directory
     mode: '0755'
+  tags: wireshark
 
-- name: Ensure dumpcap is executable
-  ansible.builtin.file:
-    path: /usr/bin/dumpcap
-    mode: '0755'
-    state: file
-  become: true
-
-- name: Ensure preferences file exists
+- name: ensure preferences file exists
   file:
     path: "{{ ansible_env.HOME }}/.config/wireshark/preferences"
     state: touch
     mode: '0644'
+  tags: wireshark
 
-- name: Set Wireshark font in global preferences
+- name: ensure dumpcap is executable :(
+  file:
+    path: /usr/bin/dumpcap
+    mode: '0755'
+    state: file
+  become: true
+  tags: wireshark
+
+- name: set wireshark font in global preferences
   lineinfile:
     path: "{{ ansible_env.HOME }}/.config/wireshark/preferences"
     regexp: '^gui\.qt\.font_name:'
     line: 'gui.qt.font_name: JetBrainsMonoNL Nerd Font Propo,12,-1,5,50,0,0,0,0,0'
     create: true
+  tags: wireshark

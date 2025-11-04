@@ -1,12 +1,10 @@
 ---
-# Keyboard configuration tasks
-
 - name: set system keyboard layout to French
   lineinfile:
     path: /etc/default/keyboard
     regexp: '^XKBLAYOUT='
     line: 'XKBLAYOUT="fr"'
-    create: yes
+    create: true
   become: true
 
 - name: set system keyboard model
@@ -14,7 +12,7 @@
     path: /etc/default/keyboard
     regexp: '^XKBMODEL='
     line: 'XKBMODEL="pc105"'
-    create: yes
+    create: true
   become: true
 
 - name: swap escape and capslock keys
@@ -22,7 +20,7 @@
     path: /etc/default/keyboard
     regexp: '^XKBOPTIONS='
     line: 'XKBOPTIONS="caps:swapescape"'
-    create: yes
+    create: true
   become: true
   when: baremetal
 

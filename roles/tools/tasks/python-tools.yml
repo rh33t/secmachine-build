@@ -1,5 +1,4 @@
 ---
-
 - name: install pipx via apt
   apt:
     name: pipx

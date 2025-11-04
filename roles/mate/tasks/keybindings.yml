@@ -1,0 +1,54 @@
+---
+- name: Reset window manager keybindings
+  ansible.builtin.shell: dconf reset {{ item }}
+  loop:
+    - /org/mate/marco/window-keybindings/close
+    - /org/mate/marco/window-keybindings/toggle-fullscreen
+  ignore_errors: yes
+  tags: 
+    - mate
+
+- name: Reset all custom keybindings
+  shell: |
+    for i in {0..9}; do
+      dconf reset -f /org/mate/desktop/keybindings/custom$i/
+    done
+  ignore_errors: yes
+
+- name: Set window manager keybindings
+  dconf:
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    - { key: '/org/mate/marco/window-keybindings/close', value: "'<Super>q'" }
+    - { key: '/org/mate/marco/window-keybindings/toggle-fullscreen', value: "'<Super>f'" }
+  tags: 
+    - mate
+
+- name: Set global keybindings for custom commands
+  dconf:
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    - { key: '/org/mate/marco/global-keybindings/run-command-1', value: "'<Super>Return'" }
+    - { key: '/org/mate/marco/global-keybindings/run-command-2', value: "'<Super>space'" }
+    - { key: '/org/mate/marco/global-keybindings/run-command-3', value: "'<Super>v'" }
+    - { key: '/org/mate/marco/global-keybindings/run-command-4', value: "'<Super>e'" }
+  tags: 
+    - mate
+
+# Custom Commands
+- name: Set custom commands
+  dconf:
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    - { key: '/org/mate/marco/keybinding-commands/command-1', value: "'mate-terminal -e \"tmux new -A -s daily\" '" }
+    - { key: '/org/mate/marco/keybinding-commands/command-2', value: "'rofi -show drun'" }
+    - { key: '/org/mate/marco/keybinding-commands/command-3', value: "'copyq toggle'" }
+    - { key: '/org/mate/marco/keybinding-commands/command-4', value: "'caja'" }
+  tags: 
+    - mate

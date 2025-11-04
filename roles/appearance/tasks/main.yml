@@ -2,5 +2,38 @@
 - name: Download and install fonts
   include_tasks: fonts.yml
 
-- name: setup wallpapers
-  include_tasks: wallpaper.yml
+- name: ensure VS Code user config directory exists
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user_id }}/.config/Visual Studio Code/User"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  tags: vscode
+
+- name: copy VS Code keybindings configuration
+  ansible.builtin.copy:
+    src: vscode-keybindings.json
+    dest: "/home/{{ ansible_user_id }}/.config/Visual Studio Code/User/keybindings.json"
+    mode: '0644'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  tags: vscode
+
+- name: copy VS Code settings configuration
+  ansible.builtin.copy:
+    src: vscode-settings.json
+    dest: "/home/{{ ansible_user_id }}/.config/Visual Studio Code/User/settings.json"
+    mode: '0644'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  tags: vscode
+
+- name: copy copyq autostart file
+  ansible.builtin.copy:
+    src: copyq.desktop
+    dest: "/home/{{ ansible_user_id }}/.config/autostart/copyq.desktop"
+    mode: '0644'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  tags: copyq

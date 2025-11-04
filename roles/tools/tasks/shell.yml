@@ -62,7 +62,7 @@
   lineinfile:
     path: "{{ ansible_env.HOME }}/.zshrc"
     regexp: "^plugins="
-    line: 'plugins=(git zsh-autosuggestions zsh-syntax-highlighting)'
+    line: 'plugins=(zsh-autosuggestions zsh-syntax-highlighting)'
     create: yes
 
 - name: ensure triplea.zsh is sourced in target system .zshrc

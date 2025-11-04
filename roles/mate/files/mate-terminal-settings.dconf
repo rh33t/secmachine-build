@@ -1,0 +1,17 @@
+[default]
+allow-bold=false
+background-color='#14141D1C2B2B'
+background-darkness=0.995
+background-type='transparent'
+bold-color='#000000000000'
+font='JetBrainsMono Nerd Font Medium 14'
+foreground-color='#FFFFFFFFFFFF'
+palette='#070636354241:#DCDB32312F2E:#858499990000:#B5B489880000:#26258B8AD2D1:#D3D236358281:#2A29A1A09897:#EEEDE8E7D5D4:#00002B2A3635:#CBCA4B4A1615:#58576E6D7574:#65647B7A8382:#838294939695:#6C6B7170C4C3:#9392A1A0A1A0:#FDFCF6F5E3E2'
+scrollback-lines=16384
+scrollback-unlimited=true
+scrollbar-position='right'
+title='Parrot Terminal'
+use-custom-command=false
+use-system-font=false
+use-theme-colors=false
+visible-name='Default'

@@ -1,3 +1,5 @@
+sudo python3 -m pip install pipx ansible --break-system-packages
+
 # Security machine build
 
 Automates my pentesting environment on Kali.

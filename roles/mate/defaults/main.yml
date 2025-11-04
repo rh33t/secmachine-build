@@ -1,10 +1,5 @@
 ---
 # MATE Desktop Configuration Variables
-
-# Keyboard settings
-keyboard_layouts:
-  - 'fr'
-
 # Window manager settings (buttons on the right)
 window_button_layout: 'menu:minimize,maximize,close'
 

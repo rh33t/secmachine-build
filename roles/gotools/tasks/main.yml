@@ -1,123 +1,56 @@
 ---
-- name: install dependencies
+- name: remove apt version of go
   apt:
-    name:
-      - curl
-      - tar
-      - git
-      - build-essential
-    state: present
-    update_cache: yes
-  become: true
-  tags: gotools
-
-- name: remove apt version of go packages
-  apt:
-    name:
-      - golang
-      - golang-go
+    name: [golang, golang-go]
     state: absent
     purge: yes
-    autoremove: yes
   become: true
-  ignore_errors: true
   tags: gotools
 
-- name: check if go binary exists
-  stat:
-    path: "{{ go_install_dir }}/go/bin/go"
-  register: go_binary_stat
-  tags: gotools
-
-- name: check if go is already installed with correct version
-  command: "{{ go_install_dir }}/go/bin/go version"
-  register: go_version_check
-  ignore_errors: true
+- name: check installed go version
+  command: /usr/local/go/bin/go version
+  register: go_check
+  failed_when: false
   changed_when: false
-  when: go_binary_stat.stat.exists
   tags: gotools
 
-- name: set go installation status
-  set_fact:
-    go_needs_install: "{{ not go_binary_stat.stat.exists or go_version_check.rc != 0 or (go_version_check.stdout is defined and go_version not in go_version_check.stdout) }}"
+- name: install go
+  when: go_check.rc != 0 or go_version not in go_check.stdout
+  block:
+    - name: download and extract go
+      unarchive:
+        src: "{{ go_download_url }}"
+        dest: /usr/local
+        remote_src: yes
+      become: true
+
+    - name: symlink go binaries
+      file:
+        src: "/usr/local/go/bin/{{ item }}"
+        dest: "/usr/local/bin/{{ item }}"
+        state: link
+      become: true
+      loop: [go, gofmt]
   tags: gotools
 
-- name: remove existing go installation directory
-  file:
-    path: "{{ go_install_dir }}/go"
-    state: absent
-  become: true
-  when: go_needs_install
-  tags: gotools
+# - name: read go tools list
+#   slurp:
+#     src: "{{ role_path }}/files/binaries.txt"
+#   register: binaries_file
+#   when: install_tools | default(false)
+#   tags: gotools
 
-- name: download go
-  get_url:
-    url: "{{ go_download_url }}"
-    dest: "/tmp/go{{ go_version }}.tar.gz"
-  become: true
-  when: go_needs_install
-  tags: gotools
-
-- name: extract go
-  unarchive:
-    src: "/tmp/go{{ go_version }}.tar.gz"
-    dest: "{{ go_install_dir }}"
-    remote_src: yes
-  become: true
-  when: go_needs_install
-  tags: gotools
-
-- name: remove go archive
-  file:
-    path: "/tmp/go{{ go_version }}.tar.gz"
-    state: absent
-  become: true
-  when: go_needs_install
-  tags: gotools
-
-- name: configure go path for current user
-  blockinfile:
-    path: "{{ ansible_env.HOME }}/.profile"
-    block: |
-      export PATH=$PATH:{{ go_install_dir }}/go/bin
-    marker: "# {mark} Go binary path"
-    create: yes
-  tags: gotools
-
-- name: configure user go environment
-  blockinfile:
-    path: "{{ ansible_env.HOME }}/.profile"
-    block: |
-      export GOPATH={{ ansible_env.HOME }}/go
-      export PATH=$PATH:{{ ansible_env.HOME }}/go/bin
-    marker: "# {mark} Go environment"
-    create: yes
-  tags: gotools
-
-- name: create go workspace
-  file:
-    path: "{{ ansible_env.HOME }}/go"
-    state: directory
-  tags: gotools
-
-- name: install go tools
-  when: install_tools
-  shell: |
-    while read -r pkg; do
-      [[ -z "$pkg" ]] && continue
-      # Extract binary name from package path
-      binary_name=$(basename "$pkg")
-      # Check if binary already exists
-      if ! command -v "$binary_name" &> /dev/null; then
-        echo "Installing $pkg..."
-        go install "$pkg" || true
-      else
-        echo "Skipping $pkg (already installed)"
-      fi
-    done < "{{ role_path }}/files/binaries.txt"
-  environment:
-    PATH: "{{ go_install_dir }}/go/bin:{{ ansible_env.HOME }}/go/bin:{{ ansible_env.PATH }}"
-    GOPATH: "{{ ansible_env.HOME }}/go"
-  register: go_tools_result
-  changed_when: "'Installing' in go_tools_result.stdout"
-  tags: gotools
+# - name: install go tools
+#   shell: |
+#     export GOPATH=$HOME/go
+#     binary_name="$(basename "{{ item }}")"
+#     if ! command -v "$binary_name" &>/dev/null; then
+#       go install "{{ item }}"
+#       echo "installed"
+#     fi
+#   loop: "{{ (binaries_file.content | b64decode).split('\n') | reject('match', '^\\s*
+# ) | list }}"
+#   register: tool_install
+#   changed_when: "'installed' in tool_install.stdout"
+#   when: install_tools | default(false)
+#   tags: gotools

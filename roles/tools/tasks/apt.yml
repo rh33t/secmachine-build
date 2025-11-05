@@ -13,27 +13,28 @@
   ansible.builtin.apt:
     name:
       - bettercap
-      - gobuster
-      - commix
-      - seclists
-      - ghidra
       - build-essential
+      - commix
+      - copyq
       - curl
+      - ghidra
       - git
-      - vim
+      - gitk
+      - gobuster
       - htop
       - jq
-      - ripgrep
-      - stow
-      - xsel
-      - zoxide
-      - copyq
-      - ranger
-      - rofi
-      - gitk
+      - libpcap-dev
       - nodejs
       - npm
       - python3-pip
+      - ranger
+      - ripgrep
+      - rofi
+      - seclists
+      - stow
+      - vim
+      - xsel
+      - zoxide
     state: present
     update_cache: true
     cache_valid_time: 3600

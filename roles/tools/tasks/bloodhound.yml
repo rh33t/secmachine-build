@@ -1,0 +1,62 @@
+# from ippsec build https://github.com/IppSec/parrot-build
+---
+- name: "creating directories"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0744'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  become: true
+  loop:
+    - "/opt/bloodhound"
+    - "/opt/bloodhound/server"
+
+- name: "download composer file"
+  get_url:
+    url: "https://raw.githubusercontent.com/SpecterOps/bloodhound/main/examples/docker-compose/docker-compose.yml"
+    dest: "/opt/bloodhound/server/docker-compose.yml"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  become: true
+
+- name: "change bloodhound port away from 8080"
+  replace:
+    path: "/opt/bloodhound/server/docker-compose.yml"
+    regexp: 'BLOODHOUND_PORT:-8080'
+    replace: 'BLOODHOUND_PORT:-8088'
+  become: true
+
+- name: "ensure docker is started"
+  ansible.builtin.systemd:
+    name: "docker"
+    state: "started"
+  become: true
+
+- name: "download bloodhound"
+  community.docker.docker_compose_v2:
+    project_src: "/opt/bloodhound/server"
+    state: present
+    env_files:
+      - "/opt/bloodhound/server/.env"
+  become: true
+
+- name: "wait for bloodhound to be up"
+  wait_for:
+    host: "localhost"
+    port: 7474
+    delay: 10
+    timeout: 300
+  become: true
+
+# There probably is a better way to do this ... i check the container's logs and they are persisted so no need to change
+- name: "grab bloodhound password"
+  shell: 'cd /opt/bloodhound/server; docker compose logs bloodhound | grep -oP "Password Set To:\s+\K[\S]+"'
+  register: bloodhound_password
+  become: true
+
+- name: "create file with bloodhound password"
+  copy:
+    content: "username: admin\npassword: {{ bloodhound_password.stdout }}"
+    dest: "/opt/bloodhound/server/initial-password.txt"
+  become: true

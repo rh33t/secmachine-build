@@ -1,8 +1,9 @@
 ---
-- include_tasks: apt.yml  
-- include_tasks: docker.yml  
-- include_tasks: python.yml  
-- include_tasks: gems.yml  
-- include_tasks: golang.yml  
-- include_tasks: wireshark.yml  
+- include_tasks: apt.yml
+- include_tasks: docker.yml
+- include_tasks: python.yml
+- include_tasks: gems.yml
+- include_tasks: golang.yml
+- include_tasks: wireshark.yml
 - include_tasks: nvim.yml
+- include_tasks: bloodhound.yml

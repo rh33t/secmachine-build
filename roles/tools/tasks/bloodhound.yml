@@ -37,8 +37,6 @@
   community.docker.docker_compose_v2:
     project_src: "/opt/bloodhound/server"
     state: present
-    env_files:
-      - "/opt/bloodhound/server/.env"
   become: true
 
 - name: "wait for bloodhound to be up"

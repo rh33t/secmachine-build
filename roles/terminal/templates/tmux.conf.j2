@@ -24,8 +24,8 @@ bind b set-option status
 bind-key a copy-mode
 setw -g mode-keys vi
 # this is fucking working i dunno why just keep it for now
-bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "xclip -sel clip -i"
-set -g copy-command 'xclip -sel clip -i'
+bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "xsel -i --clipboard"
+set -g copy-command 'xsel -i --clipboard'
 
 # switch panes using alt-arrow keys without prefix key
 bind -n M-Left select-pane -L

@@ -22,10 +22,3 @@ create-structure:
 check:
 	@echo "Checking playbook syntax..."
 	ansible-playbook playbook.yml --syntax-check
-
-# Install Ansible if not present
-install-ansible:
-	@echo "Installing Ansible..."
-	sudo apt update
-	sudo apt install -y ansible
-	ansible-galaxy collection install community.general

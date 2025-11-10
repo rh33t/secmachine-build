@@ -162,11 +162,8 @@ class TrainingManager:
 
 ## Initial Reconnaissance
 ```bash
-# Nmap scan
-nmap -sC -sV -oA initial {box}
-
-# Full port scan
-nmap -p- --min-rate=1000 -T4 {box}
+# Nmap full scan
+fastmap {box}
 ```
 
 ## Enumeration

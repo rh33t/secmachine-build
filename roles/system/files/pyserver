@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+PORT="${1:-8000}"
+
+command -v python3 >/dev/null || { echo "Error: python3 not found." >&2; exit 1; }
+
+IPs=$(ip -4 addr show | awk '/inet /{print $2}' | cut -d/ -f1 | grep -v '^127')
+[ -z "$IPs" ] && echo "Warning: no active IPv4 found." >&2
+
+echo "Starting HTTP server on port $PORT..."
+python3 -m http.server "$PORT" >/dev/null 2>&1 &
+PID=$!; sleep 1
+
+ps -p "$PID" >/dev/null || { echo "Error: failed to start on port $PORT."; exit 1; }
+
+echo "--------------------------------------------------"
+for ip in $IPs; do echo " → http://$ip:$PORT"; done
+echo "--------------------------------------------------"
+echo "Press Ctrl+C to stop (PID $PID)."
+
+trap "kill $PID 2>/dev/null; echo 'Server stopped.'" INT
+wait $PID

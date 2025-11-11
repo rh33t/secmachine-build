@@ -1,0 +1,54 @@
+---
+- name: Ensure dependencies are installed
+  apt:
+    name: [unzip, wget]
+    state: present
+    update_cache: true
+
+- name: Check if Binary Ninja is already installed
+  stat:
+    path: /opt/binaryninja
+  register: bn_status
+
+- name: Download Binary Ninja Free
+  get_url:
+    url: "https://cdn.binary.ninja/installers/binaryninja_free_linux.zip"
+    dest: "/tmp/binaryninja_free_linux.zip"
+    mode: '0644'
+  when: not bn_status.stat.exists
+
+- name: Extract Binary Ninja
+  unarchive:
+    src: "/tmp/binaryninja_free_linux.zip"
+    dest: "/opt/"
+    remote_src: true
+  when: not bn_status.stat.exists
+
+- name: Create desktop entry
+  copy:
+    dest: /usr/share/applications/binaryninja.desktop
+    mode: '0644'
+    content: |
+      [Desktop Entry]
+      Name=Binary Ninja
+      Comment=Reverse Engineering Platform
+      Exec=/opt/binaryninja/binaryninja
+      Icon=BinaryNinja
+      Terminal=false
+      Type=Application
+      Categories=Development;Security;ReverseEngineering;
+
+- name: Ensure binaryninja symlink exists
+  file:
+    src: /opt/binaryninja/binaryninja
+    dest: /usr/local/bin/binaryninja
+    state: link
+
+- name: Ensure permissions are correct
+  file:
+    path: /opt/binaryninja
+    recurse: true
+    owner: root
+    group: root
+    mode: '0755'
+  when: bn_status.stat.exists

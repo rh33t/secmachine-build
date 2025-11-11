@@ -1,8 +1,11 @@
 ---
-- name: install host-entry script
+- name: Install custom scripts
   copy:
-    src: host-entry
-    dest: /usr/local/bin/host-entry
+    src: "{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
     mode: '0755'
+  loop:
+    - host-entry
+    - pyserver
   become: true
   tags: system

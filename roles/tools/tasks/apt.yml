@@ -28,6 +28,7 @@
       - npm
       - python3-pip
       - ranger
+      - rlwrap
       - ripgrep
       - rofi
       - seclists

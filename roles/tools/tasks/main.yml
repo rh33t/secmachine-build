@@ -7,3 +7,4 @@
 - include_tasks: wireshark.yml
 - include_tasks: nvim.yml
 - include_tasks: bloodhound.yml
+- include_tasks: binaryninja.yml

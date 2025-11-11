@@ -1,5 +1,6 @@
 ---
 - name: Ensure dependencies are installed
+  become: true
   apt:
     name: [unzip, wget]
     state: present
@@ -18,6 +19,7 @@
   when: not bn_status.stat.exists
 
 - name: Extract Binary Ninja
+  become: true
   unarchive:
     src: "/tmp/binaryninja_free_linux.zip"
     dest: "/opt/"
@@ -25,6 +27,7 @@
   when: not bn_status.stat.exists
 
 - name: Create desktop entry
+  become: true
   copy:
     dest: /usr/share/applications/binaryninja.desktop
     mode: '0644'
@@ -39,12 +42,14 @@
       Categories=Development;Security;ReverseEngineering;
 
 - name: Ensure binaryninja symlink exists
+  become: true
   file:
     src: /opt/binaryninja/binaryninja
     dest: /usr/local/bin/binaryninja
     state: link
 
 - name: Ensure permissions are correct
+  become: true
   file:
     path: /opt/binaryninja
     recurse: true

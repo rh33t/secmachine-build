@@ -13,23 +13,29 @@
   ansible.builtin.apt:
     name:
       - bettercap
+      - binwalk
       - build-essential
       - commix
       - copyq
       - curl
+      - exiftool
+      - exploitdb
       - ghidra
       - git
       - gitk
       - gobuster
+      - hexedit
       - htop
+      - jadx
       - jq
       - libpcap-dev
+      - ltrace
       - nodejs
       - npm
       - python3-pip
       - ranger
-      - rlwrap
       - ripgrep
+      - rlwrap
       - rofi
       - seclists
       - stow

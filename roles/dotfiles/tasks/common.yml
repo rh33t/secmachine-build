@@ -8,6 +8,7 @@
       # config directories
       - { src: ".config/nvim", dest: ".config/nvim", type: "directory" }
       - { src: ".config/fontconfig", dest: ".config/fontconfig", type: "directory" }
+      - { src: ".config/rofi", dest: ".config/rofi", type: "directory" }
 
       # local directories
       - { src: ".bin", dest: ".bin", type: "directory" }

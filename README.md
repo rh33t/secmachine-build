@@ -11,7 +11,7 @@ sudo python3 -m pip install pipx ansible --break-system-packages
 # Install ansible community.general collection
 ansible-galaxy collection install community.general
 
-# Run setup
+# Run full setup
 make setup
 
 # Run specific tags
@@ -19,3 +19,5 @@ ansible-playbook playbook.yml --tags <tag_name> --ask-become-pass
 ```
 
 **Requirements:** Minimum 1GB free in `/tmp` for builds
+
+This work is inspired by the project [IppSec Parrot Build](https://github.com/IppSec/parrot-build), which provided the original concept and structure.

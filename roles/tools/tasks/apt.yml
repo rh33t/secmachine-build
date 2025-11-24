@@ -31,6 +31,7 @@
       - libpcap-dev
       - ltrace
       - nodejs
+      - nfs-common
       - npm
       - python3-pip
       - ranger

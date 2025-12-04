@@ -28,9 +28,8 @@
 
 ## GDB Installation error Fix (Parrot OS 6.4)
 
-Use backports to install GDB from debian bookworm-backports
+Use lory backports to install GDB
 
 ```bash
-echo "deb http://deb.debian.org/debian bookworm-backports main" | sudo tee /etc/apt/sources.list.d/backports.list
-sudo apt update && sudo apt install -t bookworm-backports gdb
+sudo apt update && sudo apt install -t lory-backports gdb
 ```

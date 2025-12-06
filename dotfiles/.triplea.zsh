@@ -8,6 +8,8 @@ export PATH=$PATH:$HOME/.cargo/bin
 export PATH=$PATH:$HOME/go/bin
 export PATH=$PATH:$HACKING_LAB/tools/built
 export MANPAGER='nvim +Man!'
+export PATH=$PATH:/sbin
+export PATH=$PATH:$HACKING_LAB/tools/custom/
 
 # pyenv configuration
 export PYENV_ROOT="$HOME/.pyenv"
@@ -18,6 +20,7 @@ eval "$(pyenv init - zsh)"
 eval "$(zoxide init zsh)"
 
 # aliases
+alias gdb='gdb -q'
 alias v='nvim'
 alias vim='nvim'
 alias p='python3'
@@ -34,6 +37,7 @@ alias pysrv='python3 -m http.server'
 alias phpd='php -S localhost:7000 -ddisplay_errors=1 -dzend_extension=xdebug.so -dxdebug.remote_enable=1'
 alias dccall='docker stop $(docker ps -aq) > /dev/null && docker rm $(docker ps -aq) > /dev/null'
 alias dccdi='docker rmi $(docker images -f "dangling=true" -q)'
+alias 33h='ssh -i ~/work/configs/ssh/triplea'
 
 # custom functions
 quickcommit() {

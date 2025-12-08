@@ -1,0 +1,14 @@
+export ZSH="$HOME/.oh-my-zsh"
+
+DISABLE_MAGIC_FUNCTIONS=true
+
+ZSH_THEME="triplea"
+
+plugins=(
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+)
+
+source $ZSH/oh-my-zsh.sh
+
+[ -r "$HOME/.triplea.zsh" ] && . "$HOME/.triplea.zsh"

@@ -2,14 +2,14 @@
 export HACKING_LAB="$HOME/work"
 
 # variables
+export PATH=$PATH:/sbin
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/.bin
 export PATH=$PATH:$HOME/.cargo/bin
 export PATH=$PATH:$HOME/go/bin
 export PATH=$PATH:$HACKING_LAB/tools/built
-export MANPAGER='nvim +Man!'
-export PATH=$PATH:/sbin
 export PATH=$PATH:$HACKING_LAB/tools/custom/
+export MANPAGER='nvim +Man!'
 
 # pyenv configuration
 export PYENV_ROOT="$HOME/.pyenv"
@@ -83,7 +83,7 @@ lab() {
 # Usage: fastmap <target> [output_file]
 fastmap() {
   local target=${1:?Usage: fastmap <target> [output_file]}
-  local out=${2:-nmap.txt}
+  local out=${2:-nmap-report.txt}
   local ports
   # check if nmap exists
   if ! command -v nmap &>/dev/null; then

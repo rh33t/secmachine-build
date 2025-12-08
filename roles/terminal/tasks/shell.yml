@@ -53,40 +53,13 @@
   become: true
   user:
     name: "{{ ansible_user_id }}"
-    shell: /usr/bin/zsh
+    shell: /bin/zsh
   tags: shell
 
-- name: configure .zshrc to use my custom theme
-  lineinfile:
-    path: "{{ ansible_env.HOME }}/.zshrc"
-    regexp: "^ZSH_THEME="
-    line: 'ZSH_THEME="triplea"'
-    create: true
-  tags: shell
-
-- name: disable magic functions in .zshrc
-  lineinfile:
-    path: "{{ ansible_env.HOME }}/.zshrc"
-    regexp: "^DISABLE_MAGIC_FUNCTIONS="
-    line: 'DISABLE_MAGIC_FUNCTIONS=true'
-    create: true
-  tags: shell
-
-- name: ensure plugins are enabled in .zshrc
-  lineinfile:
-    path: "{{ ansible_env.HOME }}/.zshrc"
-    regexp: "^plugins="
-    line: 'plugins=(zsh-autosuggestions zsh-syntax-highlighting)'
-    create: true
-  tags: shell
-
-- name: ensure triplea.zsh is sourced in target system .zshrc
-  blockinfile:
-    path: "{{ ansible_env.HOME }}/.zshrc"
-    create: true
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - triplea.zsh"
-    block: |
-      # Source triplea.zsh for custom lab configuration
-      [ -r "$HOME/.triplea.zsh" ] && . "$HOME/.triplea.zsh"
-    insertafter: EOF
+- name: deploy .zshrc configuration
+  template:
+    src: zshrc.j2
+    dest: "{{ ansible_env.HOME }}/.zshrc"
+    mode: "0644"
+    backup: true
   tags: shell

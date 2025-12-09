@@ -101,6 +101,6 @@ fastmap() {
   fi
   echo "[fastmap] ports: $ports"
   echo "[fastmap] running detailed scan..."
-  nmap -p"$ports" -Pn -sC -sV "$target" -oN "$out"
+  nmap -p"$ports" -vv -Pn -sC -sV "$target" -oN "$out"
   echo "[fastmap] done! output saved to $out"
 }

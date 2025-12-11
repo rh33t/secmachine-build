@@ -4,6 +4,7 @@
     dotfile_mappings:
       # root dotfiles
       - { src: ".triplea.zsh", dest: ".triplea.zsh", type: "file" }
+      - { src: ".rustscan.toml", dest: ".rustscan.toml", type: "file" }
 
       # config directories
       - { src: ".config/nvim", dest: ".config/nvim", type: "directory" }

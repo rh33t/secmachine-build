@@ -78,29 +78,3 @@ lab() {
 
   python3 ~/.bin/hacking/$script_name $mode && [ -f "$temp_file" ] && cd "$(cat $temp_file)" && echo "[✓] Ready: $(pwd)"
 }
-
-# fastmap: quick Nmap scan function
-# Usage: fastmap <target> [output_file]
-fastmap() {
-  local target=${1:?Usage: fastmap <target> [output_file]}
-  local out=${2:-nmap-report.txt}
-  local ports
-  # check if nmap exists
-  if ! command -v nmap &>/dev/null; then
-    echo "nmap not found!" >&2
-    return 1
-  fi
-  echo "[fastmap] discovering ports on $target..."
-  ports=$(nmap -p- --min-rate=1000 -Pn -T4 "$target" \
-    | awk '/^[0-9]/{split($1,a,"/"); printf a[1]","}' \
-    | sed 's/,$//')
-
-  if [[ -z "$ports" ]]; then
-    echo "[fastmap] no ports found, host down?"
-    return 1
-  fi
-  echo "[fastmap] ports: $ports"
-  echo "[fastmap] running detailed scan..."
-  nmap -p"$ports" -vv -Pn -sC -sV "$target" -oN "$out"
-  echo "[fastmap] done! output saved to $out"
-}

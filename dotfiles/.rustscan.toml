@@ -1,0 +1,11 @@
+command = ["-Pn", "-sC", "-sV", "-oN", "nmap-report.txt"]
+greppable = false
+accessible = false
+batch_size = 5000
+timeout = 1500
+tries = 1
+ulimit = 5000
+
+[range]
+start = 1
+end = 65535

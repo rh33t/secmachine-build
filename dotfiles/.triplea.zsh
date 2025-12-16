@@ -80,20 +80,20 @@ lab() {
 }
 
 fastmap() {
-  local target=${1:?Usage: fastmap <target> [output_file] [options]}
-  local out=${2:-nmap-${target//[.:]/-}-$(date +%s).txt}
-  local opts="${3:--sC -sV}"
-  
-  command -v nmap &>/dev/null || { echo "nmap not found!" >&2; return 1; }
-  
-  echo "[+] Fast scanning $target..."
-  local ports=$(nmap -p- --min-rate=5000 -T5 -Pn -n --open "$target" 2>/dev/null \
-    | awk '/^[0-9]/{gsub("/.*","",$1); p=p","$1} END{sub(/^,/,"",p); print p}')
-  
-  [[ -z "$ports" ]] && { echo "[-] No open ports found" >&2; return 1; }
-  
-  echo "[+] Open ports: $ports"
-  echo "[+] Deep scanning..."
-  nmap -p"$ports" -A -T4 -Pn -n --open $opts "$target" -oN "$out" \
-    && echo "[+] Results: $out"
+  local target=${1:?Usage: fastmap <target> [output_file]}
+  local out=${2:-nmap-report.txt}
+  local ports
+  echo "[fastmap] discovering ports on $target..."
+  ports=$(nmap -p- --min-rate=1000 -Pn -T4 "$target" \
+    | awk '/^[0-9]/{split($1,a,"/"); printf a[1]","}' \
+    | sed 's/,$//')
+
+  if [[ -z "$ports" ]]; then
+    echo "[fastmap] no ports found, host down?"
+    return 1
+  fi
+  echo "[fastmap] ports: $ports"
+  echo "[fastmap] running detailed scan..."
+  nmap -p"$ports" -vv -Pn -sC -sV "$target" -oN "$out"
+  echo "[fastmap] done! output saved to $out"
 }

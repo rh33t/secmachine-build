@@ -64,7 +64,7 @@ z() {
     ) && cd "$dir"
   }
 
-# Unified Hacking Lab Manager Function
+# manage box and ctf labs
 lab() {
   local mode="$1"
   local script_name="training-tool.py"
@@ -77,4 +77,23 @@ lab() {
   esac
 
   python3 ~/.bin/hacking/$script_name $mode && [ -f "$temp_file" ] && cd "$(cat $temp_file)" && echo "[✓] Ready: $(pwd)"
+}
+
+fastmap() {
+  local target=${1:?Usage: fastmap <target> [output_file] [options]}
+  local out=${2:-nmap-${target//[.:]/-}-$(date +%s).txt}
+  local opts="${3:--sC -sV}"
+  
+  command -v nmap &>/dev/null || { echo "nmap not found!" >&2; return 1; }
+  
+  echo "[+] Fast scanning $target..."
+  local ports=$(nmap -p- --min-rate=5000 -T5 -Pn -n --open "$target" 2>/dev/null \
+    | awk '/^[0-9]/{gsub("/.*","",$1); p=p","$1} END{sub(/^,/,"",p); print p}')
+  
+  [[ -z "$ports" ]] && { echo "[-] No open ports found" >&2; return 1; }
+  
+  echo "[+] Open ports: $ports"
+  echo "[+] Deep scanning..."
+  nmap -p"$ports" -A -T4 -Pn -n --open $opts "$target" -oN "$out" \
+    && echo "[+] Results: $out"
 }

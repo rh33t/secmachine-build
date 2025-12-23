@@ -1,0 +1,6 @@
+---
+- name: Include MATE appearance settings
+  include_tasks: mate-appearance.yml
+
+- name: Include MATE keybindings
+  include_tasks: mate-keybindings.yml

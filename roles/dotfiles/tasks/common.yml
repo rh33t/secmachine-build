@@ -13,7 +13,6 @@
 
       # local directories
       - { src: ".bin", dest: ".bin", type: "directory" }
-  tags: dotfiles
 
 - name: ensure parent directories exist
   file:
@@ -22,11 +21,9 @@
     mode: '0755'
   loop: "{{ dotfile_mappings }}"
   when: item.dest | dirname != '.'
-  tags: dotfiles
 
 - name: force remove existing dotfiles and directories to avoid conflicts
   file:
     path: "{{ ansible_env.HOME }}/{{ item.dest }}"
     state: absent
   loop: "{{ dotfile_mappings }}"
-  tags: dotfiles

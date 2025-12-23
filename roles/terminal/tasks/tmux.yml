@@ -5,11 +5,9 @@
     state: present
     update_cache: true
   become: true
-  tags: tmux
 
 - name: deploy tmux configuration
   template:
     src: tmux.conf.j2
     dest: "~/.tmux.conf"
     mode: '0644'
-  tags: tmux

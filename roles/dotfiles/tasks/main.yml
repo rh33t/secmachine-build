@@ -1,7 +1,9 @@
 ---
 - name: common dotfiles tasks preparation
-  include_tasks: common.yml
-  tags: dotfiles
+  import_tasks: common.yml
+  tags:
+    - dotfiles
+    - common
 
 - name: deploy dotfiles via symlinks
   include_tasks: symlinks.yml

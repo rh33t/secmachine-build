@@ -7,4 +7,3 @@
   loop:
     - zsteg
   become: true
-  tags: gems

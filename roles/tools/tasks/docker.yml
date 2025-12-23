@@ -9,7 +9,6 @@
     state: absent
   register: docker_remove
   become: true
-  tags: docker
 
 - name: remove containerd/runc if docker was removed
   apt:
@@ -19,7 +18,6 @@
     state: absent
   when: docker_remove.changed
   become: true
-  tags: docker
 
 - name: install docker prerequisites
   apt:
@@ -28,7 +26,6 @@
       - curl
     state: latest
   become: true
-  tags: docker
 
 - name: create apt keyrings directory
   file:
@@ -36,7 +33,6 @@
     state: directory
     mode: '0755'
   become: true
-  tags: docker
 
 - name: download docker GPG key
   get_url:
@@ -44,7 +40,6 @@
     dest: /etc/apt/keyrings/docker.asc
     mode: '0644'
   become: true
-  tags: docker
 
 - name: install docker repository
   apt_repository:
@@ -52,14 +47,12 @@
     state: present
     update_cache: true
   become: true
-  tags: docker
 
 - name: upgrade all packages
   apt: 
     upgrade: true 
     force_apt_get: true
   become: true
-  tags: docker
 
 - name: install docker packages
   apt:
@@ -71,15 +64,20 @@
       - docker-compose-plugin
     state: latest
   become: true
-  tags: docker
 
-- name: disable docker from starting on boot to preserve resources
+- name: disable docker service from starting on boot to preserve resources
   systemd:
     name: docker
     enabled: false
     state: stopped
   become: true
-  tags: docker
+
+- name: disable docker socket from starting on boot
+  systemd:
+    name: docker.socket
+    enabled: false
+    state: stopped
+  become: true
 
 - name: disable containerd from starting on boot
   systemd:
@@ -87,7 +85,6 @@
     enabled: false
     state: stopped
   become: true
-  tags: docker
 
 - name: add user to docker group
   user:
@@ -95,4 +92,3 @@
     groups: docker
     append: true
   become: true
-  tags: docker

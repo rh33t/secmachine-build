@@ -1,8 +1,0 @@
----
-- name: Include MATE appearance settings
-  ansible.builtin.include_tasks: appearance.yml
-  tags: mate
-
-- name: Include MATE keybindings
-  ansible.builtin.include_tasks: keybindings.yml
-  tags: mate

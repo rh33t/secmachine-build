@@ -1,0 +1,12 @@
+---
+- name: Include clipboard manager tasks
+  import_tasks: clipboard.yml
+  tags:
+    - applications
+    - clipboard
+
+- name: Include VS Code configuration tasks
+  import_tasks: vscode.yml
+  tags:
+    - applications
+    - vscode

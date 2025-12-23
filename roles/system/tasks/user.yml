@@ -2,7 +2,6 @@
 - name: get current user information with fallbacks
   set_fact:
     current_user: "{{ ansible_user | default(ansible_user_id) | default(ansible_env.USER) | default(ansible_env.LOGNAME) }}"
-  tags: system
 
 - name: Add current user to sudoers with NOPASSWD
   copy:
@@ -13,4 +12,3 @@
     group: root
     validate: 'visudo -cf %s'
   become: true
-  tags: system

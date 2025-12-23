@@ -1,3 +1,10 @@
 ---
-- include_tasks: burpsuite.yml
-- include_tasks: firefox.yml
+- import_tasks: burpsuite.yml
+  tags:
+    - firefox-burpsuite
+    - burpsuite
+
+- import_tasks: firefox.yml
+  tags:
+    - firefox-burpsuite
+    - firefox

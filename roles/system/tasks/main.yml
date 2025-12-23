@@ -1,16 +1,24 @@
 ---
 - name: configure user sudoers
-  include_tasks: user.yml
-  tags: system
+  import_tasks: user.yml
+  tags:
+    - system
+    - user
 
 - name: configure system keyboard layout
-  include_tasks: keyboard.yml
-  tags: system
+  import_tasks: keyboard.yml
+  tags:
+    - system
+    - keyboard
 
 - name: configure system timezone
-  include_tasks: timezone.yml
-  tags: system
+  import_tasks: timezone.yml
+  tags:
+    - system
+    - timezone
 
 - name: install system scripts
-  include_tasks: scripts.yml
-  tags: system
+  import_tasks: scripts.yml
+  tags:
+    - system
+    - scripts

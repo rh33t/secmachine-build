@@ -8,12 +8,12 @@
   when: item.type == "file"
   tags: dotfiles
 
-- name: copy dotfile directories
+- name: copy dotfile directories recursively
   synchronize:
     src: "{{ playbook_dir }}/dotfiles/{{ item.src }}/"
     dest: "{{ ansible_env.HOME }}/{{ item.dest }}/"
-    delete: true
-    recursive: true
+    recursive: yes
+    delete: no
   loop: "{{ dotfile_mappings }}"
   when: item.type == "directory"
   tags: dotfiles

@@ -1,3 +1,10 @@
 ---
-- include_tasks: shell.yml
-- include_tasks: tmux.yml
+- import_tasks: shell.yml
+  tags:
+    - terminal
+    - shell
+
+- import_tasks: tmux.yml
+  tags:
+    - terminal
+    - tmux

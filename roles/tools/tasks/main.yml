@@ -1,10 +1,45 @@
 ---
-- include_tasks: apt.yml
-- include_tasks: docker.yml
-- include_tasks: python.yml
-- include_tasks: gems.yml
-- include_tasks: golang.yml
-- include_tasks: wireshark.yml
-- include_tasks: nvim.yml
-# - include_tasks: bloodhound.yml
-- include_tasks: binaryninja.yml
+- import_tasks: apt.yml
+  tags:
+    - tools
+    - apt
+
+- import_tasks: docker.yml
+  tags:
+    - tools
+    - docker
+
+- import_tasks: python.yml
+  tags:
+    - tools
+    - python
+
+- import_tasks: gems.yml
+  tags:
+    - tools
+    - gems
+
+- import_tasks: golang.yml
+  tags:
+    - tools
+    - golang
+
+- import_tasks: wireshark.yml
+  tags:
+    - tools
+    - wireshark
+
+- import_tasks: nvim.yml
+  tags:
+    - tools
+    - nvim
+
+- import_tasks: bloodhound.yml
+  tags:
+    - tools
+    - bloodhound
+
+- import_tasks: binaryninja.yml
+  tags:
+    - tools
+    - binaryninja

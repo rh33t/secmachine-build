@@ -19,7 +19,6 @@
     state: present
     update_cache: true
   become: true
-  tags: nvim
 
 - name: Check if Neovim is installed and get version
   shell: |
@@ -30,19 +29,16 @@
     fi
   register: nvim_check
   changed_when: false
-  tags: nvim
 
 - name: Get latest stable version from GitHub
   uri:
     url: https://api.github.com/repos/neovim/neovim/releases/latest
     return_content: true
   register: latest_release
-  tags: nvim
 
 - name: Set latest version fact
   set_fact:
     nvim_latest_version: "{{ (latest_release.json.tag_name | regex_replace('^v','')) }}"
-  tags: nvim
 
 - name: Check if current Neovim is up to date
   set_fact:
@@ -50,7 +46,6 @@
       {{ nvim_check.stdout == "not_installed" or
          nvim_latest_version not in nvim_check.stdout or
          force_nvim_rebuild | default(false) }}
-  tags: nvim
 
 - name: Debug Neovim status
   debug:
@@ -58,7 +53,6 @@
       - "Current Neovim: {{ nvim_check.stdout }}"
       - "Latest version: {{ nvim_latest_version | default('unknown') }}"
       - "Needs update: {{ nvim_needs_update }}"
-  tags: nvim
 
 - name: Remove existing neovim package
   apt:
@@ -67,14 +61,12 @@
   become: true
   when: nvim_needs_update
   ignore_errors: true
-  tags: nvim
 
 - name: Remove existing build directory
   file:
     path: "{{ nvim_build_dir }}"
     state: absent
   when: nvim_needs_update
-  tags: nvim
 
 - name: Clone or update Neovim repository
   git:
@@ -84,14 +76,12 @@
     depth: 1
     update: true
   when: nvim_needs_update
-  tags: nvim
 
 - name: Build Neovim
   command: make CMAKE_BUILD_TYPE={{ nvim_build_type }}
   args:
     chdir: "{{ nvim_build_dir }}"
   when: nvim_needs_update
-  tags: nvim
 
 - name: Install Neovim
   command: make install
@@ -99,11 +89,9 @@
     chdir: "{{ nvim_build_dir }}"
   become: true
   when: nvim_needs_update
-  tags: nvim
 
 - name: Cleanup build directory
   file:
     path: "{{ nvim_build_dir }}"
     state: absent
   when: nvim_needs_update
-  tags: nvim

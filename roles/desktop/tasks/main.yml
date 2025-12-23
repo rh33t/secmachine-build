@@ -1,0 +1,28 @@
+---
+# TODO: Add when conditions to only apply 
+# settings for the current desktop environment
+# I don't know if i should set it manually or detect it automatically
+# when: ansible_env.DESKTOP_SESSION is defined and 'xfce' in ansible_env.DESKTOP_SESSION
+
+- name: Copy templates to ~/Templates
+  ansible.builtin.copy:
+    src: Templates/
+    dest: "{{ ansible_env.HOME }}/Templates/"
+    mode: '0644'
+  tags:
+    - desktop
+    - templates
+
+# - name: Include MATE appearance settings
+#   import_tasks: mate.yml
+#   tags:
+#     - desktop
+#     - appearance
+#     - mate
+
+- name: Include XFCE appearance settings
+  import_tasks: xfce.yml
+  tags:
+    - desktop
+    - appearance
+    - xfce

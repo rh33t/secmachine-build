@@ -7,7 +7,6 @@
     - /org/mate/marco/window-keybindings/toggle-fullscreen
   ignore_errors: true
   become: false
-  tags: mate
 
 - name: Reset all custom keybindings
   shell: |
@@ -17,7 +16,6 @@
     done
   ignore_errors: true
   become: false
-  tags: mate
 
 - name: Set window manager keybindings
   dconf:
@@ -27,7 +25,6 @@
   loop:
     - { key: '/org/mate/marco/window-keybindings/close', value: "'<Super>q'" }
     - { key: '/org/mate/marco/window-keybindings/toggle-fullscreen', value: "'<Super>f'" }
-  tags: mate
 
 - name: Set global keybindings for custom commands
   dconf:
@@ -39,7 +36,6 @@
     - { key: '/org/mate/marco/global-keybindings/run-command-2', value: "'<Super>space'" }
     - { key: '/org/mate/marco/global-keybindings/run-command-3', value: "'<Super>v'" }
     - { key: '/org/mate/marco/global-keybindings/run-command-4', value: "'<Super>e'" }
-  tags: mate
 
 # Custom Commands
 - name: Set custom commands
@@ -52,4 +48,3 @@
     - { key: '/org/mate/marco/keybinding-commands/command-2', value: "'rofi -show drun'" }
     - { key: '/org/mate/marco/keybinding-commands/command-3', value: "'copyq toggle'" }
     - { key: '/org/mate/marco/keybinding-commands/command-4', value: "'caja'" }
-  tags: mate

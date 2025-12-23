@@ -6,7 +6,6 @@
     mode: '0755'
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
-  tags: vscode
 
 - name: copy VS Code keybindings configuration
   copy:
@@ -15,7 +14,6 @@
     mode: '0644'
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
-  tags: vscode
 
 - name: copy VS Code settings configuration
   copy:
@@ -24,4 +22,3 @@
     mode: '0644'
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
-  tags: vscode

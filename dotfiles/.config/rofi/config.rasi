@@ -8,7 +8,6 @@ configuration {
   display-ssh: "> SSH";
   drun-display-format: "{name}";
   font: "JetBrainsMono Nerd Font 13";
-  terminal: "mate-terminal";
 }
 
 @theme "default"

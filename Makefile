@@ -1,12 +1,10 @@
-.PHONY: help setup create-structure check install-ansible
+.PHONY: help setup create-structure
 
 # Default target
 help:
 	@echo "Available targets:"
-	@echo "  install-ansible    - Install Ansible and required collections"
 	@echo "  setup              - Run Ansible playbook on local machine"
 	@echo "  create-structure   - Create lab directory structure"
-	@echo "  check              - Check playbook syntax"
 	@echo "  help               - Show this help message"
 
 # Run Ansible playbook
@@ -17,8 +15,3 @@ setup:
 # Create lab directory structure
 create-structure:
 	@./scripts/create-structure.sh
-
-# Check playbook syntax
-check:
-	@echo "Checking playbook syntax..."
-	ansible-playbook playbook.yml --syntax-check

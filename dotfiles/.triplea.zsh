@@ -38,6 +38,18 @@ alias phpd='php -S 0.0.0.0:8000 -ddisplay_errors=1 -dzend_extension=xdebug.so -d
 alias dccall='docker stop $(docker ps -aq) > /dev/null && docker rm $(docker ps -aq) > /dev/null'
 alias dccdi='docker rmi $(docker images -f "dangling=true" -q)'
 alias 33h='ssh -i ~/work/configs/ssh/triplea'
+alias _i='sudo -i'
+alias please='sudo'
+alias tarnow='tar -acf '
+alias untar='tar -zxvf '
+alias wget='wget -c '
+alias psmem='ps auxf | sort -nr -k 4'
+alias psmem10='ps auxf | sort -nr -k 4 | head -10'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
 
 # custom functions
 quickcommit() {
@@ -96,4 +108,19 @@ fastmap() {
   echo "[fastmap] running detailed scan..."
   nmap -p"$ports" -vv -Pn -sC -sV "$target" -oN "$out"
   echo "[fastmap] done! output saved to $out"
+}
+
+function hex-encode()
+{
+  echo "$@" | xxd -p
+}
+
+function hex-decode()
+{
+  echo "$@" | xxd -p -r
+}
+
+function rot13()
+{
+  echo "$@" | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 }

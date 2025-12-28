@@ -8,49 +8,60 @@
     state: present
   become: true
 
-- name: check if oh-my-zsh is already installed
-  stat:
-    path: "{{ ansible_env.HOME }}/.oh-my-zsh"
-  register: omz_installed
-
-- name: install oh-my-zsh
-  shell: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-  when: not omz_installed.stat.exists
-
-- name: install zsh-autosuggestions plugin
-  git:
-    repo: https://github.com/zsh-users/zsh-autosuggestions
-    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
-    update: false
-
-- name: install zsh-syntax-highlighting plugin
-  git:
-    repo: https://github.com/zsh-users/zsh-syntax-highlighting
-    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
-    update: false
-
-- name: ensure oh-my-zsh custom themes directory exists
-  file:
-    path: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes"
-    state: directory
-    mode: "0755"
-
-- name: install custom theme
-  copy:
-    src: triplea.zsh-theme
-    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes/triplea.zsh-theme"
-    mode: "0644"
-    backup: true
-
-- name: set Zsh as default shell for current user
+- name: set zsh as default shell for current user
   become: true
   user:
     name: "{{ ansible_user_id }}"
     shell: /bin/zsh
 
-- name: deploy .zshrc configuration
+- name: oh-my-zsh installation and configuration
+  block:
+    - name: check if oh-my-zsh is already installed
+      stat:
+        path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+      register: omz_installed
+
+    - name: install oh-my-zsh
+      shell: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+      when: not omz_installed.stat.exists
+
+    - name: install zsh-autosuggestions plugin
+      git:
+        repo: https://github.com/zsh-users/zsh-autosuggestions
+        dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+        update: false
+
+    - name: install zsh-syntax-highlighting plugin
+      git:
+        repo: https://github.com/zsh-users/zsh-syntax-highlighting
+        dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+        update: false
+
+    - name: ensure oh-my-zsh custom themes directory exists
+      file:
+        path: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes"
+        state: directory
+        mode: "0755"
+
+    - name: install custom theme
+      copy:
+        src: triplea.zsh-theme
+        dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes/triplea.zsh-theme"
+        mode: "0644"
+        backup: true
+
+    - name: deploy .zshrc configuration (with oh-my-zsh)
+      template:
+        src: omz.zshrc.j2
+        dest: "{{ ansible_env.HOME }}/.zshrc"
+        mode: "0644"
+        backup: true
+  when: install_omz
+
+- name: deploy enhanced Kali .zshrc configuration (without oh-my-zsh)
   template:
-    src: zshrc.j2
+    src: kali.zshrc.j2
     dest: "{{ ansible_env.HOME }}/.zshrc"
     mode: "0644"
     backup: true
+  when: not install_omz

@@ -70,6 +70,7 @@
       <property name="XF86WWW" type="string" value="exo-open --launch WebBrowser"/>
       <property name="&lt;Super&gt;Return" type="string" value="qterminal -e 'tmux new -A -s daily'"/>
       <property name="&lt;Super&gt;space" type="string" value="rofi -show drun ~/.config/rofi/config.rasi"/>
+      <property name="&lt;Alt&gt;space" type="string" value="rofi -show window ~/.config/rofi/config.rasi"/>
       <property name="&lt;Super&gt;v" type="string" value="copyq show"/>
     </property>
   </property>

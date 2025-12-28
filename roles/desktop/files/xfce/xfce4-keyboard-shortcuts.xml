@@ -68,10 +68,10 @@
       <property name="&lt;Super&gt;e" type="string" value="exo-open --launch FileManager"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;Print" type="string" value="/usr/share/kali-themes/xfce4-screenshooter --window --clipboard"/>
       <property name="XF86WWW" type="string" value="exo-open --launch WebBrowser"/>
-      <property name="&lt;Super&gt;Return" type="string" value="qterminal -e 'tmux new -A -s daily'"/>
+      <property name="&lt;Super&gt;Return" type="string" value="qterminal -e &apos;tmux new -A -s daily&apos;"/>
       <property name="&lt;Super&gt;space" type="string" value="rofi -show drun ~/.config/rofi/config.rasi"/>
-      <property name="&lt;Alt&gt;space" type="string" value="rofi -show window ~/.config/rofi/config.rasi"/>
       <property name="&lt;Super&gt;v" type="string" value="copyq show"/>
+      <property name="&lt;Alt&gt;space" type="string" value="rofi -show window ~/.config/rofi/config.rasi"/>
     </property>
   </property>
   <property name="xfwm4" type="empty">
@@ -202,7 +202,6 @@
       <property name="&lt;Shift&gt;&lt;Super&gt;Down" type="string" value="move_window_to_monitor_down_key"/>
       <property name="&lt;Primary&gt;&lt;Super&gt;8" type="string" value="move_window_workspace_8_key"/>
       <property name="&lt;Alt&gt;Tab" type="string" value="cycle_windows_key"/>
-      <property name="&lt;Alt&gt;space" type="string" value="popup_menu_key"/>
       <property name="&lt;Alt&gt;F6" type="string" value="stick_window_key"/>
       <property name="&lt;Alt&gt;&lt;Shift&gt;Page_Down" type="string" value="lower_window_key"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;3" type="string" value="workspace_3_key"/>

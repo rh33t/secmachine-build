@@ -7,13 +7,13 @@
 
 - name: ensure wireshark config directory exists
   file:
-    path: "{{ ansible_env.HOME }}/.config/wireshark"
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/wireshark"
     state: directory
     mode: '0755'
 
 - name: ensure preferences file exists
   file:
-    path: "{{ ansible_env.HOME }}/.config/wireshark/preferences"
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/wireshark/preferences"
     state: touch
     mode: '0644'
 
@@ -26,7 +26,7 @@
 
 - name: set wireshark font in global preferences
   lineinfile:
-    path: "{{ ansible_env.HOME }}/.config/wireshark/preferences"
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/wireshark/preferences"
     regexp: '^gui\.qt\.font_name:'
     line: 'gui.qt.font_name: JetBrainsMonoNL Nerd Font Propo,12,-1,5,50,0,0,0,0,0'
     create: true

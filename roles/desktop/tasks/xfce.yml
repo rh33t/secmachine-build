@@ -1,44 +1,44 @@
 ---
 - name: Ensure xfce4 config directories exist
   file:
-    path: "{{ ansible_env.HOME }}/.config/xfce4/xfconf/xfce-perchannel-xml"
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/xfce4/xfconf/xfce-perchannel-xml"
     state: directory
     mode: '0755'
 
 - name: Deploy XFCE panel configuration
   copy:
     src: xfce/xfce4-panel.xml
-    dest: "{{ ansible_env.HOME }}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
     mode: '0644'
 
 - name: Deploy XFCE window manager configuration
   copy:
     src: xfce/xfwm4.xml
-    dest: "{{ ansible_env.HOME }}/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
     mode: '0644'
 
 - name: Deploy XFCE settings configuration
   copy:
     src: xfce/xsettings.xml
-    dest: "{{ ansible_env.HOME }}/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml"
     mode: '0644'
 
 - name: Deploy XFCE keyboard shortcuts
   copy:
     src: xfce/xfce4-keyboard-shortcuts.xml
-    dest: "{{ ansible_env.HOME }}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml"
     mode: '0644'
 
 - name: Deploy Thunar configuration
   copy:
     src: xfce/thunar.xml
-    dest: "{{ ansible_env.HOME }}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
     mode: '0644'
 
 - name: Deploy QTerminal configuration
   copy:
     src: xfce/qterminal.org/
-    dest: "{{ ansible_env.HOME }}/.config/qterminal.org/"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/qterminal.org/"
     mode: '0644'
 
 - name: Restart xfconf daemon to apply changes

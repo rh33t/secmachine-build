@@ -4,8 +4,8 @@
     path: "{{ item }}"
     state: directory
     mode: '0744'
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
+    owner: "{{ ansible_facts['user_id'] }}"
+    group: "{{ ansible_facts['user_id'] }}"
   become: true
   loop:
     - "/opt/bloodhound"
@@ -15,8 +15,8 @@
   get_url:
     url: "https://raw.githubusercontent.com/SpecterOps/bloodhound/main/examples/docker-compose/docker-compose.yml"
     dest: "/opt/bloodhound/server/docker-compose.yml"
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
+    owner: "{{ ansible_facts['user_id'] }}"
+    group: "{{ ansible_facts['user_id'] }}"
   become: true
 
 - name: "change bloodhound port away from 8080"

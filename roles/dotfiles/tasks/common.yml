@@ -16,7 +16,7 @@
 
 - name: ensure parent directories exist
   file:
-    path: "{{ ansible_env.HOME }}/{{ item.dest | dirname }}"
+    path: "{{ ansible_facts['env']['HOME'] }}/{{ item.dest | dirname }}"
     state: directory
     mode: '0755'
   loop: "{{ dotfile_mappings }}"
@@ -24,6 +24,6 @@
 
 - name: force remove existing dotfiles and directories to avoid conflicts
   file:
-    path: "{{ ansible_env.HOME }}/{{ item.dest }}"
+    path: "{{ ansible_facts['env']['HOME'] }}/{{ item.dest }}"
     state: absent
   loop: "{{ dotfile_mappings }}"

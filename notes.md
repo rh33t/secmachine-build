@@ -19,17 +19,3 @@
    sudo systemctl daemon-reload
    sudo mount -a
 ```
-
-4. **Verify:**
-
-```bash
-   ls ~/work
-```
-
-## GDB Installation error Fix (Parrot OS 6.4)
-
-Use lory backports to install GDB
-
-```bash
-sudo apt update && sudo apt install -t lory-backports gdb
-```

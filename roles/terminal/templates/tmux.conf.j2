@@ -70,11 +70,11 @@ set -g base-index 1
 setw -g aggressive-resize on
 
 # status bar configuration
-set -g status-interval 1
+set -g status-interval 15
 set -g status-left-length 200
 set -g status-right-length 40
-set -g status-left ' #[fg=green][#S] #[fg=green]• #(~/.bin/vpn-status.sh) '
-set -g status-right '#[default]#[fg=blue]{{ ansible_facts['user_id'] }}'
+set -g status-left ' #[fg=green] #S #[fg=green]• #(~/.bin/vpn-status.sh) '
+set -g status-right '#[default]#[fg=green]  󰃰 %H:%M#[fg=blue] | #[fg=blue] #(whoami)'
 
 # colors and styles
 set-option -g status-style bg=default,fg=colour136
@@ -88,8 +88,8 @@ set-option -g display-panes-colour "#7dcfff"
 set-window-option -g clock-mode-colour green
 
 # windows format
-set -g window-status-current-format ' #W'
-set -g window-status-format '#I: #W'
+set -g window-status-current-format ' #W'
+set -g window-status-format '#I -> #W'
 
 # allows for faster key repetition
 set -s escape-time 50

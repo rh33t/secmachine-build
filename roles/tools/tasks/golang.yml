@@ -29,23 +29,3 @@
         state: link
       become: true
       loop: [go, gofmt]
-
-# - name: read go tools list
-#   slurp:
-#     src: "{{ role_path }}/files/binaries.txt"
-#   register: binaries_file
-#   when: install_tools | default(false)
-
-# - name: install go tools
-#   shell: |
-#     export GOPATH=$HOME/go
-#     binary_name="$(basename "{{ item }}")"
-#     if ! command -v "$binary_name" &>/dev/null; then
-#       go install "{{ item }}"
-#       echo "installed"
-#     fi
-#   loop: "{{ (binaries_file.content | b64decode).split('\n') | reject('match', '^\\s*
-# ) | list }}"
-#   register: tool_install
-#   changed_when: "'installed' in tool_install.stdout"
-#   when: go_install_tools | default(false)

@@ -1,10 +1,12 @@
 ---
-- import_tasks: shell.yml
+- name: configure shell
+  import_tasks: shell.yml
   tags:
     - terminal
     - shell
 
-- import_tasks: tmux.yml
+- name: configure tmux
+  import_tasks: tmux.yml
   tags:
     - terminal
     - tmux

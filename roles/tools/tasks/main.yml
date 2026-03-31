@@ -1,45 +1,60 @@
 ---
-- import_tasks: apt.yml
+- name: install apt tools
+  import_tasks: apt.yml
   tags:
     - tools
     - apt
 
-- import_tasks: docker.yml
+- name: install docker
+  import_tasks: docker.yml
   tags:
     - tools
     - docker
 
-- import_tasks: python.yml
+- name: install python tools
+  import_tasks: python.yml
   tags:
     - tools
     - python
 
-- import_tasks: gems.yml
+- name: install ruby gems
+  import_tasks: gems.yml
   tags:
     - tools
     - gems
 
-- import_tasks: golang.yml
+- name: install golang
+  import_tasks: golang.yml
   tags:
     - tools
     - golang
 
-- import_tasks: wireshark.yml
+- name: install wireshark
+  import_tasks: wireshark.yml
   tags:
     - tools
     - wireshark
 
-- import_tasks: nvim.yml
+- name: install neovim
+  import_tasks: nvim.yml
   tags:
     - tools
     - nvim
 
-- import_tasks: bloodhound.yml
+- name: install bloodhound
+  import_tasks: bloodhound.yml
   tags:
     - tools
     - bloodhound
 
-- import_tasks: binaryninja.yml
+- name: install binary ninja
+  import_tasks: binaryninja.yml
   tags:
     - tools
     - binaryninja
+
+- name: install shelf
+  import_tasks: shelf.yml
+  tags:
+    - tools
+    - shelf

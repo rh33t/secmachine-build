@@ -1,0 +1,29 @@
+---
+- name: check if shelf is installed
+  command: shelf --version
+  register: shelf_check
+  failed_when: false
+  changed_when: false
+
+- name: get latest shelf release from github
+  uri:
+    url: https://api.github.com/repos/kraaakilo/shelf/releases/latest
+    return_content: true
+  register: shelf_release
+
+- name: set shelf latest version fact
+  set_fact:
+    shelf_latest_version: "{{ shelf_release.json.tag_name }}"
+
+- name: install shelf
+  when: shelf_check.rc != 0 or shelf_latest_version not in shelf_check.stdout
+  block:
+    - name: download shelf binary
+      get_url:
+        url: "{{ shelf_release.json.assets
+              | selectattr('name', 'match', '.*[Ll]inux.*[Aa]md64.*|.*[Aa]md64.*[Ll]inux.*')
+              | map(attribute='browser_download_url')
+              | first }}"
+        dest: /usr/local/bin/shelf
+        mode: '0755'
+      become: true

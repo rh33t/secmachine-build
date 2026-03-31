@@ -6,11 +6,15 @@
     - common
 
 - name: deploy dotfiles via symlinks
-  include_tasks: symlinks.yml
+  import_tasks: symlinks.yml
   when: dotfiles_use_symlinks | default(true) | bool
-  tags: dotfiles
+  tags:
+    - dotfiles
+    - symlinks
 
 - name: deploy dotfiles via copying
-  include_tasks: copy.yml
+  import_tasks: copy.yml
   when: not (dotfiles_use_symlinks | default(true) | bool)
-  tags: dotfiles
+  tags:
+    - dotfiles
+    - copy

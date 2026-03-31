@@ -1,10 +1,12 @@
 ---
-- import_tasks: burpsuite.yml
+- name: install burpsuite
+  import_tasks: burpsuite.yml
   tags:
     - firefox-burpsuite
     - burpsuite
 
-- import_tasks: firefox.yml
+- name: configure firefox
+  import_tasks: firefox.yml
   tags:
     - firefox-burpsuite
     - firefox

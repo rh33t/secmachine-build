@@ -6,7 +6,6 @@
     mode: preserve
   loop: "{{ dotfile_mappings }}"
   when: item.type == "file"
-  tags: dotfiles
 
 - name: copy dotfile directories recursively
   synchronize:
@@ -16,4 +15,3 @@
     delete: no
   loop: "{{ dotfile_mappings }}"
   when: item.type == "directory"
-  tags: dotfiles

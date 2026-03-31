@@ -1,281 +1,319 @@
 #!/usr/bin/env python3
+"""host-entry — /etc/hosts manager for CTF / pentest work."""
 
 import sys
 import os
 import re
 import shutil
+import argparse
 from pathlib import Path
 
-HOSTS_FILE = "/etc/hosts"
-BACKUP_FILE = "/etc/hosts.ctf.bak"
-START_MARKER = "# === MANAGED BY ADD-HOST START ==="
-END_MARKER = "# === MANAGED BY ADD-HOST END ==="
+HOSTS_FILE = Path("/etc/hosts")
+BACKUP_FILE = Path("/etc/hosts.ctf.bak")
+START_MARKER = "# === MANAGED BY HOST-ENTRY START ==="
+END_MARKER   = "# === MANAGED BY HOST-ENTRY END ==="
 
-def check_root():
-    """Check if script is running as root"""
-    if os.geteuid() != 0:
-        print("Error: This script must be run as root (use sudo)")
-        sys.exit(1)
+# ── ANSI colours (suppressed when stdout is not a tty) ───────────────────────
+_tty = sys.stdout.isatty()
+def _c(code): return code if _tty else ""
+GREEN  = _c("\033[32m"); RED    = _c("\033[31m"); YELLOW = _c("\033[33m")
+CYAN   = _c("\033[36m"); BOLD   = _c("\033[1m");  DIM    = _c("\033[2m")
+RESET  = _c("\033[0m")
 
-def create_backup():
-    """Create a single backup file if it doesn't exist"""
-    if not Path(BACKUP_FILE).exists():
-        shutil.copy2(HOSTS_FILE, BACKUP_FILE)
-        print(f"Original hosts file backed up to {BACKUP_FILE}")
+def ok(msg):   print(f"{GREEN}✓{RESET} {msg}")
+def err(msg):  print(f"{RED}✗{RESET} {msg}", file=sys.stderr)
+def warn(msg): print(f"{YELLOW}!{RESET} {msg}")
+def info(msg): print(f"{CYAN}→{RESET} {msg}")
 
+
+# ── Validation ────────────────────────────────────────────────────────────────
+_IPV4_RE = re.compile(r"^(\d{1,3}\.){3}\d{1,3}$")
+_HOST_RE  = re.compile(r"^[a-zA-Z0-9]([a-zA-Z0-9.\-]*[a-zA-Z0-9])?$")
+
+def validate_ip(ip: str) -> bool:
+    if _IPV4_RE.match(ip):
+        return all(0 <= int(p) <= 255 for p in ip.split("."))
+    # IPv6 — delegate to the socket layer
+    try:
+        import socket
+        socket.inet_pton(socket.AF_INET6, ip)
+        return True
+    except (OSError, AttributeError):
+        return False
+
+def validate_hostname(hostname: str) -> bool:
+    return len(hostname) <= 253 and bool(_HOST_RE.match(hostname))
+
+
+# ── Hosts file I/O ────────────────────────────────────────────────────────────
 def read_hosts():
-    """Read and parse the hosts file into sections"""
-    with open(HOSTS_FILE, 'r') as f:
-        content = f.read()
-
-    lines = content.split('\n')
-
-    # Find marker positions
-    start_idx = None
-    end_idx = None
-
+    """Return (before, managed_entries, after) line lists."""
+    lines = HOSTS_FILE.read_text().split("\n")
+    start_idx = end_idx = None
     for i, line in enumerate(lines):
-        if line.strip() == START_MARKER:
+        s = line.strip()
+        if s == START_MARKER:
             start_idx = i
-        elif line.strip() == END_MARKER and start_idx is not None:
+        elif s == END_MARKER and start_idx is not None:
             end_idx = i
             break
-
     if start_idx is None or end_idx is None:
-        # No markers found
         return lines, [], []
+    return lines[:start_idx], lines[start_idx + 1:end_idx], lines[end_idx + 1:]
 
-    before = lines[:start_idx]
-    ctf_entries = lines[start_idx + 1:end_idx]
-    after = lines[end_idx + 1:]
 
-    return before, ctf_entries, after
+def _atomic_write(path: Path, content: str):
+    """Write *content* to *path* atomically (temp-file + rename)."""
+    tmp = path.parent / f".{path.name}.tmp.{os.getpid()}"
+    try:
+        tmp.write_text(content)
+        shutil.copystat(path, tmp)
+        os.replace(tmp, path)
+    except Exception:
+        tmp.unlink(missing_ok=True)
+        raise
 
-def write_hosts(before, ctf_entries, after):
-    """Write the hosts file with all sections"""
-    lines = before + [START_MARKER] + ctf_entries + [END_MARKER] + after
 
-    # Clean up multiple blank lines at the end
-    while len(lines) > 1 and lines[-1] == '' and lines[-2] == '':
+def write_hosts(before, managed, after):
+    lines = before + [START_MARKER] + managed + [END_MARKER] + after
+    while len(lines) > 1 and lines[-1] == "" and lines[-2] == "":
         lines.pop()
+    content = "\n".join(lines)
+    if not content.endswith("\n"):
+        content += "\n"
+    _atomic_write(HOSTS_FILE, content)
 
-    with open(HOSTS_FILE, 'w') as f:
-        f.write('\n'.join(lines))
-        if lines and lines[-1] != '':
-            f.write('\n')
 
 def init_markers():
-    """Initialize CTF markers if they don't exist"""
-    with open(HOSTS_FILE, 'r') as f:
-        content = f.read()
+    """Ensure a properly-paired managed section exists."""
+    lines = HOSTS_FILE.read_text().split("\n")
+    if any(l.strip() == START_MARKER for l in lines) and \
+       any(l.strip() == END_MARKER   for l in lines):
+        return
+    # Remove any orphaned markers, then append a fresh pair
+    lines = [l for l in lines if l.strip() not in (START_MARKER, END_MARKER)]
+    content = "\n".join(lines).rstrip("\n") + f"\n\n{START_MARKER}\n{END_MARKER}\n"
+    _atomic_write(HOSTS_FILE, content)
 
-    lines = content.split('\n')
-    
-    # Check for properly paired markers
-    start_found = False
-    end_found = False
-    
-    for line in lines:
-        if line.strip() == START_MARKER:
-            start_found = True
-        elif line.strip() == END_MARKER and start_found:
-            end_found = True
-            break
-    
-    # Only add markers if no proper pair exists
-    if not (start_found and end_found):
-        # Remove any orphaned markers first
-        lines = [line for line in lines if line.strip() not in [START_MARKER, END_MARKER]]
-        
-        # Add proper marker pair
-        with open(HOSTS_FILE, 'w') as f:
-            content = '\n'.join(lines)
-            if content and not content.endswith('\n'):
-                f.write(content + '\n')
-            else:
-                f.write(content)
-            f.write(f'\n{START_MARKER}\n{END_MARKER}\n')
 
-def validate_ip(ip):
-    """Validate IP address format"""
-    pattern = r'^(\d{1,3}\.){3}\d{1,3}$'
-    if not re.match(pattern, ip):
-        return False
-    parts = ip.split('.')
-    return all(0 <= int(part) <= 255 for part in parts)
+def create_backup():
+    if not BACKUP_FILE.exists():
+        shutil.copy2(HOSTS_FILE, BACKUP_FILE)
+        info(f"Backup created at {BACKUP_FILE}")
 
-def validate_hostname(hostname):
-    """Validate hostname format"""
-    pattern = r'^[a-zA-Z0-9]([a-zA-Z0-9\.\-]*[a-zA-Z0-9])?$'
-    return re.match(pattern, hostname) is not None
 
-def add_entry(ip, hostnames):
-    """Add or update hosts entries (supports multiple hostnames)"""
-    if not validate_ip(ip):
-        print(f"Error: Invalid IP address format: {ip}")
+# ── Entry parsing helpers ─────────────────────────────────────────────────────
+def _parse_entry(line: str):
+    """Return (ip, [hostnames], comment) or None for blank/comment lines."""
+    stripped = line.strip()
+    if not stripped or stripped.startswith("#"):
+        return None
+    comment = ""
+    m = re.search(r"\s+#\s*(.*)", stripped)
+    if m:
+        comment = m.group(1)
+        stripped = stripped[:m.start()]
+    fields = stripped.split()
+    if len(fields) < 2:
+        return None
+    return fields[0], fields[1:], comment
+
+
+def _has_hostname(line: str, hostname: str) -> bool:
+    p = _parse_entry(line)
+    return p is not None and hostname in p[1]
+
+
+# ── Commands ──────────────────────────────────────────────────────────────────
+def cmd_add(args):
+    if not validate_ip(args.ip):
+        err(f"Invalid IP address: {args.ip}")
         sys.exit(1)
-
-    # Validate all hostnames first
-    for hostname in hostnames:
-        if not validate_hostname(hostname):
-            print(f"Error: Invalid hostname format: {hostname}")
+    for h in args.hostnames:
+        if not validate_hostname(h):
+            err(f"Invalid hostname: {h}")
             sys.exit(1)
 
     create_backup()
     init_markers()
+    before, managed, after = read_hosts()
 
-    before, ctf_entries, after = read_hosts()
+    for hostname in args.hostnames:
+        managed = [l for l in managed if not _has_hostname(l, hostname)]
+        entry = f"{args.ip}\t{hostname}"
+        if args.comment:
+            entry += f"  # {args.comment}"
+        managed.append(entry)
 
-    added = []
+    write_hosts(before, managed, after)
+    for h in args.hostnames:
+        ok(f"Added:  {BOLD}{args.ip}{RESET}  →  {h}")
+    print()
+    cmd_list(args)
 
-    for hostname in hostnames:
-        # Remove any existing entry with this hostname
-        ctf_entries = [line for line in ctf_entries 
-            if line.strip() and not line.strip().endswith(hostname)]
 
-        # Add new entry
-        new_entry = f"{ip} {hostname}"
-        ctf_entries.append(new_entry)
-        added.append(hostname)
+def cmd_remove(args):
+    before, managed, after = read_hosts()
 
-    write_hosts(before, ctf_entries, after)
-
-    if added:
-        for hostname in added:
-            print(f"✓ Added: {ip} {hostname}")
-
-def remove_entry(hostnames):
-    """Remove hosts entries (supports multiple hostnames)"""
-    before, ctf_entries, after = read_hosts()
-
-    if not ctf_entries or all(not line.strip() for line in ctf_entries):
-        print(f"No entries managed by {START_MARKER}")
+    if not any(l.strip() for l in managed):
+        warn("No managed entries.")
         sys.exit(1)
 
-    removed = []
-    not_found = []
-
-    for hostname in hostnames:
-        found = False
-        for entry in ctf_entries:
-            if entry.strip() and entry.strip().endswith(hostname):
-                found = True
-                break
-
-        if found:
-            ctf_entries = [line for line in ctf_entries 
-                if line.strip() and not line.strip().endswith(hostname)]
+    removed, not_found = [], []
+    for hostname in args.hostnames:
+        if any(_has_hostname(l, hostname) for l in managed):
+            managed = [l for l in managed if not _has_hostname(l, hostname)]
             removed.append(hostname)
         else:
             not_found.append(hostname)
 
     if not removed:
-        print(f"Hostnames not found: {', '.join(not_found)}")
+        err(f"Not found: {', '.join(not_found)}")
         sys.exit(1)
 
-    write_hosts(before, ctf_entries, after)
-
-    for hostname in removed:
-        print(f"✓ Removed: {hostname}")
-
+    write_hosts(before, managed, after)
+    for h in removed:
+        ok(f"Removed: {h}")
     if not_found:
-        print(f"Not found: {', '.join(not_found)}")
+        warn(f"Not found: {', '.join(not_found)}")
+    print()
+    cmd_list(args)
 
-def list_entries():
-    """List all managed entries"""
-    before, ctf_entries, after = read_hosts()
 
-    # Filter out empty lines
-    ctf_entries = [line for line in ctf_entries if line.strip()]
+def cmd_list(args):
+    _, managed, _ = read_hosts()
+    parsed = [p for p in (_parse_entry(l) for l in managed) if p]
 
-    if not ctf_entries:
-        print(f"No entries managed by {START_MARKER}")
-    else:
-        print(f"Current entries managed by {START_MARKER}:")
-        for entry in ctf_entries:
-            print(entry)
-
-def clear_entries(remove_markers=False):
-    """Clear all managed entries"""
-    before, ctf_entries, after = read_hosts()
-
-    if not ctf_entries or all(not line.strip() for line in ctf_entries):
-        print(f"No entries managed by {START_MARKER} to clear")
+    if not parsed:
+        info("No managed entries.")
         return
 
-    if remove_markers:
-        # Remove markers completely
-        # Clean up trailing empty lines from before section
-        while before and before[-1].strip() == '':
-            before.pop()
+    col_ip    = max(len(p[0])            for p in parsed)
+    col_hosts = max(len(" ".join(p[1]))  for p in parsed)
 
-        with open(HOSTS_FILE, 'w') as f:
-            f.write('\n'.join(before))
-            if before and before[-1] != '':
-                f.write('\n')
-            if after and any(line.strip() for line in after):
-                f.write('\n'.join(after))
-                if after[-1] != '':
-                    f.write('\n')
-        print(f"✓ All entries managed by {START_MARKER} and markers removed")
-    else:
-        write_hosts(before, [], after)
-        print(f"✓ All entries managed by {START_MARKER} cleared")
+    header = f"{'IP':<{col_ip}}  {'HOSTNAME(S)':<{col_hosts}}  COMMENT"
+    print(f"\n{BOLD}{CYAN}{header}{RESET}")
+    print(f"{DIM}{'─' * len(header)}{RESET}")
+    for ip, hostnames, comment in parsed:
+        cmt = f"  {DIM}# {comment}{RESET}" if comment else ""
+        print(f"{YELLOW}{ip:<{col_ip}}{RESET}  {' '.join(hostnames):<{col_hosts}}{cmt}")
+    print()
 
-def show_usage():
-    """Show usage information"""
-    print("CTF /etc/hosts Manager")
+
+def cmd_search(args):
+    _, managed, _ = read_hosts()
+    try:
+        pattern = re.compile(args.pattern, re.IGNORECASE)
+    except re.error as e:
+        err(f"Invalid regex: {e}")
+        sys.exit(1)
+
+    matches = [_parse_entry(l) for l in managed
+               if l.strip() and pattern.search(l)]
+    matches = [m for m in matches if m]
+
+    if not matches:
+        info(f"No entries matching '{args.pattern}'.")
+        return
+
+    print(f"\n{BOLD}Matches for '{args.pattern}':{RESET}")
+    for ip, hostnames, comment in matches:
+        cmt = f"  {DIM}# {comment}{RESET}" if comment else ""
+        print(f"  {YELLOW}{ip}{RESET}  {' '.join(hostnames)}{cmt}")
     print()
-    print("Usage:")
-    print(f"  {sys.argv[0]} add <IP> <HOSTNAME> [<HOSTNAME2> ...]  - Add or update entries")
-    print(f"  {sys.argv[0]} remove <HOSTNAME> [<HOSTNAME2> ...]    - Remove entries")
-    print(f"  {sys.argv[0]} list                                   - List all managed entries")
-    print(f"  {sys.argv[0]} clear                                  - Remove all entries (keep markers)")
-    print(f"  {sys.argv[0]} clean                                  - Remove all entries and markers")
-    print()
-    print("Examples:")
-    print(f"  {sys.argv[0]} add 10.10.11.123 target.htb")
-    print(f"  {sys.argv[0]} add 10.10.11.123 target.htb www.target.htb api.target.htb")
-    print(f"  {sys.argv[0]} remove target.htb www.target.htb")
-    print(f"  {sys.argv[0]} clean")
+
+
+def cmd_clear(args):
+    before, managed, after = read_hosts()
+    active = [l for l in managed if l.strip()]
+    if not active:
+        info("Nothing to clear.")
+        return
+    write_hosts(before, [], after)
+    ok(f"Cleared {len(active)} entr{'y' if len(active) == 1 else 'ies'}.")
+
+
+def cmd_clean(args):
+    before, _, after = read_hosts()
+    while before and not before[-1].strip():
+        before.pop()
+    parts = ["\n".join(before)]
+    if any(l.strip() for l in after):
+        parts.append("\n".join(after))
+    content = "\n".join(parts).strip("\n") + "\n"
+    _atomic_write(HOSTS_FILE, content)
+    ok("All managed entries and markers removed.")
+
+
+def cmd_restore(args):
+    if not BACKUP_FILE.exists():
+        err(f"No backup found at {BACKUP_FILE}")
+        sys.exit(1)
+    shutil.copy2(BACKUP_FILE, HOSTS_FILE)
+    ok(f"Restored from {BACKUP_FILE}")
+
+
+# ── Argument parser ───────────────────────────────────────────────────────────
+def build_parser():
+    parser = argparse.ArgumentParser(
+        prog="host-entry",
+        description="Manage /etc/hosts entries for CTF / pentest work.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""examples:
+  host-entry add 10.10.11.123 target.htb
+  host-entry add 10.10.11.123 target.htb www.target.htb -c "HTB Season 6"
+  host-entry remove target.htb www.target.htb
+  host-entry search 10.10.11
+  host-entry list
+  host-entry clear
+  host-entry clean
+  host-entry restore""",
+    )
+    sub = parser.add_subparsers(dest="command", metavar="COMMAND")
+
+    p = sub.add_parser("add", help="Add or update entries")
+    p.add_argument("ip", metavar="IP")
+    p.add_argument("hostnames", metavar="HOSTNAME", nargs="+")
+    p.add_argument("--comment", "-c", metavar="TEXT", help="Inline comment for the entries")
+    p.set_defaults(func=cmd_add)
+
+    p = sub.add_parser("remove", aliases=["rm"], help="Remove entries by hostname")
+    p.add_argument("hostnames", metavar="HOSTNAME", nargs="+")
+    p.set_defaults(func=cmd_remove)
+
+    p = sub.add_parser("list", aliases=["ls"], help="List all managed entries")
+    p.set_defaults(func=cmd_list)
+
+    p = sub.add_parser("search", help="Search entries by regex pattern")
+    p.add_argument("pattern", metavar="PATTERN")
+    p.set_defaults(func=cmd_search)
+
+    p = sub.add_parser("clear", help="Remove all entries (keep markers)")
+    p.set_defaults(func=cmd_clear)
+
+    p = sub.add_parser("clean", help="Remove all entries and markers")
+    p.set_defaults(func=cmd_clean)
+
+    p = sub.add_parser("restore", help="Restore /etc/hosts from backup")
+    p.set_defaults(func=cmd_restore)
+
+    return parser
+
 
 def main():
-    check_root()
-
-    if len(sys.argv) < 2:
-        show_usage()
+    if os.geteuid() != 0:
+        err("This script must be run as root (use sudo)")
         sys.exit(1)
 
-    command = sys.argv[1]
+    parser = build_parser()
+    args = parser.parse_args()
 
-    if command == "add":
-        if len(sys.argv) < 4:
-            print("Usage: add <IP> <HOSTNAME> [<HOSTNAME2> ...]")
-            sys.exit(1)
-        add_entry(sys.argv[2], sys.argv[3:])
-        print()
-        list_entries()
-
-    elif command == "remove":
-        if len(sys.argv) < 3:
-            print("Usage: remove <HOSTNAME> [<HOSTNAME2> ...]")
-            sys.exit(1)
-        remove_entry(sys.argv[2:])
-        print()
-        list_entries()
-
-    elif command == "list":
-        list_entries()
-
-    elif command == "clear":
-        clear_entries()
-
-    elif command == "clean":
-        clear_entries(remove_markers=True)
-
-    else:
-        show_usage()
+    if not args.command:
+        parser.print_help()
         sys.exit(1)
+
+    args.func(args)
+
 
 if __name__ == "__main__":
     main()

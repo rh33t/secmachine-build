@@ -25,6 +25,7 @@ alias ....='cd ../../..'
 alias .....='cd ../../../..'
 alias ......='cd ../../../../..'
 alias cdd='cd $HACKING_LAB; clear;'
+alias dl='cd ~/Downloads'
 
 # System
 alias l='ls -CF --color=auto'

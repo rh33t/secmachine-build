@@ -21,7 +21,7 @@
     - name: download shelf binary
       get_url:
         url: "{{ shelf_release.json.assets
-              | selectattr('name', 'match', '.*[Ll]inux.*[Aa]md64.*|.*[Aa]md64.*[Ll]inux.*')
+              | selectattr('name', 'equalto', 'shelf')
               | map(attribute='browser_download_url')
               | first }}"
         dest: /usr/local/bin/shelf

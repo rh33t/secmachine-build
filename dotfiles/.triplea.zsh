@@ -87,18 +87,10 @@ alias osint-wayback='f(){ curl -sk "https://web.archive.org/cdx/search/cdx?fl=or
 alias osint-leakix='f(){ curl -sk "https://leakix.net/api/graph/hostname/$1?v[]=hostname&v[]=ip&d=auto&l=auto" | jq | grep -ioP "hostname/[^\"]+" | cut -d/ -f2 | sort -uV; unset -f f; }; f'
 
 # Functions
-quickcommit() {
-  local msg=${1:-"quick save in $(basename "$PWD") - $(date +%F_%H:%M:%S)"}
-  git add -A && git commit -m "$msg" && git push
-}
-
-mcd() {
-  mkdir -p "$1" && cd "$1"
-}
-
-fcopy() {
-  [[ -f "$1" ]] && cat "$1" | pbcopy
-}
+quickcommit() { git add -A && git commit -m "${1:-quick save in $(basename "$PWD") - $(date +%F_%H:%M:%S)}" && git push; }
+mcd() { mkdir -p -- "$1" && cd -- "$1"; }
+fcopy() { [ -f "$1" ] && pbcopy < "$1"; }
+termbin() { [ -t 0 ] && [ -f "$1" ] && nc termbin.com 9999 < "$1" || nc termbin.com 9999; }
 
 z() {
   local dir

@@ -11,6 +11,7 @@
 - name: Install apt packages
   ansible.builtin.apt:
     name:
+      - autorecon
       - bettercap
       - binwalk
       - build-essential
@@ -19,6 +20,7 @@
       - curl
       - exiftool
       - exploitdb
+      - fzf
       - ghidra
       - git
       - gitk
@@ -29,6 +31,7 @@
       - jq
       - libpcap-dev
       - ltrace
+      - moreutils
       - nodejs
       - nfs-common
       - npm

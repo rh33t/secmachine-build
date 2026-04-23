@@ -17,6 +17,7 @@ export PYENV_ROOT="$HOME/.pyenv"
 eval "$(pyenv init - zsh)"
 
 eval "$(zoxide init zsh)"
+eval "$(fzf --zsh)"
 
 # Navigation
 alias ..='cd ..'
@@ -64,6 +65,7 @@ alias dcit='docker run --rm -it -v /tmp:/tmp -v "$PWD":/pwn -w /pwn'
 alias pysrv='python3 -m http.server'
 alias phpd='php -S 0.0.0.0:8000 -ddisplay_errors=1 -dzend_extension=xdebug.so -dxdebug.remote_enable=1'
 alias efs='file=$(fzf --reverse --preview="cat {}" --walker-skip=.git,vendor,node_modules -i) && [ -n "$file" ] && nvim "$file"'
+bindkey -s '^k' 'efs\n'
 
 # Encoding / Decoding
 alias urldec='python3 -c "import sys; from urllib.parse import unquote; print(unquote(sys.argv[1]))"'

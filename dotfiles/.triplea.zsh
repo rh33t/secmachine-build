@@ -50,9 +50,9 @@ alias pbcopy='xsel --input --clipboard'
 alias pbpaste='xsel --output --clipboard'
 
 # Network
-alias ssha='ssh -i $HACKING_LAB/configs/ssh/triplea -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+alias ssha='ssh -i $HACKING_LAB/configs/ssh/kali -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 alias sshu='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
-alias 33h='ssh -i ~/work/configs/ssh/triplea'
+alias sshi='ssh -i $HACKING_LAB/configs/ssh/kali'
 alias ncl='nc -lnvp'
 alias openports='ss -tlnp'
 

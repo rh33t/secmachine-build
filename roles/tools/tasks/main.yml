@@ -41,11 +41,11 @@
     - tools
     - nvim
 
-- name: install bloodhound
-  import_tasks: bloodhound.yml
-  tags:
-    - tools
-    - bloodhound
+# - name: install bloodhound
+#   import_tasks: bloodhound.yml
+#   tags:
+#     - tools
+#     - bloodhound
 
 - name: install binary ninja
   import_tasks: binaryninja.yml

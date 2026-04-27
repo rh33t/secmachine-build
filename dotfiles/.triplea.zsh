@@ -78,6 +78,7 @@ b64e()       { echo -n "$@" | base64; }
 b64d()       { echo -n "$@" | base64 -d; }
 md5()        { echo -n "$@" | md5sum | cut -d' ' -f1; }
 sha256()     { echo -n "$@" | sha256sum | cut -d' ' -f1; }
+spu() { sshpass -p "$1" ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "${@:2}" }
 
 # Web Recon
 alias osint-creds='f(){ xdg-open "https://cirt.net/passwords?criteria=$@"; unset -f f; }; f'

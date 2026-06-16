@@ -10,3 +10,9 @@
   tags:
     - terminal
     - tmux
+
+- name: configure alacritty
+  import_tasks: alacritty.yml
+  tags:
+    - terminal
+    - alacritty

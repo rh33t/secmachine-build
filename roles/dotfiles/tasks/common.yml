@@ -3,7 +3,7 @@
   set_fact:
     dotfile_mappings:
       # root dotfiles
-      - { src: ".triplea.zsh", dest: ".triplea.zsh", type: "file" }
+      - { src: ".tools.zsh", dest: ".tools.zsh", type: "file" }
       - { src: ".rustscan.toml", dest: ".rustscan.toml", type: "file" }
 
       # config directories

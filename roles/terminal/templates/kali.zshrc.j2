@@ -251,6 +251,7 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 alias ll='ls -l'
+alias lll='ls -lapsh'
 alias la='ls -A'
 alias l='ls -CF'
 
@@ -265,5 +266,6 @@ if [ -f /etc/zsh_command_not_found ]; then
     . /etc/zsh_command_not_found
 fi
 
-[ -r "$HOME/.triplea.zsh" ] && . "$HOME/.triplea.zsh"
+[ -r "$HOME/.tools.zsh" ] && . "$HOME/.tools.zsh"
+[ -r "$HOME/.local.zsh" ] && . "$HOME/.local.zsh"
 {% endraw %}

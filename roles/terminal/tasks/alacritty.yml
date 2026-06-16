@@ -1,0 +1,12 @@
+---
+- name: Ensure alacritty config directory exists
+  file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/alacritty"
+    state: directory
+    mode: '0755'
+
+- name: Deploy Alacritty configuration
+  copy:
+    src: alacritty.toml
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/alacritty/alacritty.toml"
+    mode: '0644'

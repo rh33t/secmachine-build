@@ -1,13 +1,3 @@
-# tmux plugin manager (tpm)
-set -g @plugin 'tmux-plugins/tpm'
-set -g @plugin 'tmux-plugins/tmux-sensible'
-set -g @plugin 'tmux-plugins/tmux-resurrect'
-set -g @plugin 'tmux-plugins/tmux-yank'
-set -g @plugin 'omerxx/tmux-sessionx'
-
-# tmux-sessionx
-set -g @sessionx-bind '$'
-
 # set the prefix to ctrl+s
 unbind C-s
 set -g prefix C-s
@@ -105,9 +95,8 @@ set -g window-status-format '#I -> #W'
 # allows for faster key repetition
 set -s escape-time 50
 
+set -g history-limit 50000
+
 # auto window rename
 set -g automatic-rename on
 set -g set-titles on
-
-# initialize tpm
-run '~/.tmux/plugins/tpm/tpm'

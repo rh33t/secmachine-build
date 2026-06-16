@@ -45,8 +45,8 @@
 
     - name: install custom theme
       copy:
-        src: triplea.zsh-theme
-        dest: "{{ ansible_facts['env']['HOME'] }}/.oh-my-zsh/custom/themes/triplea.zsh-theme"
+        src: kali.zsh-theme
+        dest: "{{ ansible_facts['env']['HOME'] }}/.oh-my-zsh/custom/themes/kali.zsh-theme"
         mode: "0644"
         backup: true
 

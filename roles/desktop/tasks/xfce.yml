@@ -35,12 +35,6 @@
     dest: "{{ ansible_facts['env']['HOME'] }}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
     mode: '0644'
 
-- name: Deploy QTerminal configuration
-  copy:
-    src: xfce/qterminal.org/
-    dest: "{{ ansible_facts['env']['HOME'] }}/.config/qterminal.org/"
-    mode: '0644'
-
 - name: Restart xfconf daemon to apply changes
   shell: |
     pkill -HUP xfconfd || true

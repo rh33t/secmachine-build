@@ -11,6 +11,7 @@
 - name: Install apt packages
   ansible.builtin.apt:
     name:
+      - alacritty
       - autorecon
       - bettercap
       - binwalk

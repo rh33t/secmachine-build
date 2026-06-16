@@ -42,7 +42,7 @@
       <property name="&lt;Alt&gt;F1" type="string" value="xfce4-popup-whiskermenu --pointer"/>
       <property name="&lt;Super&gt;w" type="string" value="exo-open --launch WebBrowser"/>
       <property name="&lt;Super&gt;l" type="string" value="xflock4"/>
-      <property name="&lt;Primary&gt;&lt;Alt&gt;t" type="string" value="exo-open --launch TerminalEmulator"/>
+      <property name="&lt;Primary&gt;&lt;Alt&gt;t" type="string" value="alacritty"/>
       <property name="&lt;Primary&gt;&lt;Shift&gt;&lt;Alt&gt;t" type="string" value="pkexec x-terminal-emulator"/>
       <property name="&lt;Super&gt;r" type="string" value="xfrun4"/>
       <property name="Print" type="string" value="/usr/share/kali-themes/xfce4-screenshooter"/>
@@ -54,7 +54,7 @@
       <property name="&lt;Primary&gt;&lt;Shift&gt;Escape" type="string" value="xfce4-taskmanager"/>
       <property name="&lt;Alt&gt;F3" type="string" value="xfce4-appfinder"/>
       <property name="XF86Calculator" type="string" value="mate-calc"/>
-      <property name="&lt;Super&gt;t" type="string" value="exo-open --launch TerminalEmulator"/>
+      <property name="&lt;Super&gt;t" type="string" value="alacritty"/>
       <property name="XF86HomePage" type="string" value="exo-open --launch WebBrowser"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;f" type="string" value="exo-open --launch FileManager"/>
       <property name="&lt;Alt&gt;Print" type="string" value="/usr/share/kali-themes/xfce4-screenshooter --window"/>
@@ -68,7 +68,7 @@
       <property name="&lt;Super&gt;e" type="string" value="exo-open --launch FileManager"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;Print" type="string" value="/usr/share/kali-themes/xfce4-screenshooter --window --clipboard"/>
       <property name="XF86WWW" type="string" value="exo-open --launch WebBrowser"/>
-      <property name="&lt;Super&gt;Return" type="string" value="qterminal -e &apos;tmux new -A -s daily&apos;"/>
+      <property name="&lt;Super&gt;Return" type="string" value="alacritty -e tmux new -A -s daily"/>
       <property name="&lt;Super&gt;space" type="string" value="rofi -show drun ~/.config/rofi/config.rasi"/>
       <property name="&lt;Super&gt;v" type="string" value="copyq show"/>
       <property name="&lt;Alt&gt;space" type="string" value="rofi -show window ~/.config/rofi/config.rasi"/>

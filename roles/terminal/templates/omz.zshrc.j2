@@ -3,7 +3,7 @@ export ZSH_COMPDUMP=$ZSH/cache/.zcompdump-$HOST
 
 DISABLE_MAGIC_FUNCTIONS=true
 
-ZSH_THEME="triplea"
+ZSH_THEME="kali"
 
 plugins=(
   zsh-autosuggestions
@@ -12,4 +12,5 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
-[ -r "$HOME/.triplea.zsh" ] && . "$HOME/.triplea.zsh"
+[ -r "$HOME/.tools.zsh" ] && . "$HOME/.tools.zsh"
+[ -r "$HOME/.local.zsh" ] && . "$HOME/.local.zsh"

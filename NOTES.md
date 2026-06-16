@@ -15,7 +15,7 @@
 
 ```bash
    mkdir -p ~/work
-   echo '.host:/storage /home/triplea/work fuse.vmhgfs-fuse allow_other,uid=1000,gid=1003 0 0' | sudo tee -a /etc/fstab
+   echo '.host:/storage /home/kali/work fuse.vmhgfs-fuse allow_other,uid=1000,gid=1000 0 0' | sudo tee -a /etc/fstab
    sudo systemctl daemon-reload
    sudo mount -a
 ```

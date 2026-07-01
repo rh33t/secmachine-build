@@ -19,6 +19,7 @@
       - commix
       - copyq
       - curl
+      - clangd
       - exiftool
       - exploitdb
       - fzf

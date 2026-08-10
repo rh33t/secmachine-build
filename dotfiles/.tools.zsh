@@ -89,6 +89,16 @@ alias osint-wayback='f(){ curl -sk "https://web.archive.org/cdx/search/cdx?fl=or
 alias osint-leakix='f(){ curl -sk "https://leakix.net/api/graph/hostname/$1?v[]=hostname&v[]=ip&d=auto&l=auto" | jq | grep -ioP "hostname/[^\"]+" | cut -d/ -f2 | sort -uV; unset -f f; }; f'
 
 # Functions
+atsu() {
+  if (( $# && $+commands[$1] )); then
+    local cmd="${commands[$1]}"
+    shift
+    command sudo "$cmd" "$@"
+  else
+    command sudo "$@"
+  fi
+}
+
 quickcommit() { git add -A && git commit -m "${1:-quick save in $(basename "$PWD") - $(date +%F_%H:%M:%S)}" && git push; }
 mcd() { mkdir -p -- "$1" && cd -- "$1"; }
 fcopy() { [ -f "$1" ] && pbcopy < "$1"; }

@@ -37,6 +37,7 @@
       - nodejs
       - nfs-common
       - npm
+      - payloadallthethings
       - python3-pip
       - ranger
       - ripgrep

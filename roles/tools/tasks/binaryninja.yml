@@ -57,3 +57,21 @@
     group: root
     mode: '0755'
   when: bn_status.stat.exists
+
+- name: Ensure Binary Ninja config directory exists
+  file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.binaryninja"
+    state: directory
+    mode: '0755'
+
+- name: Copy Binary Ninja settings
+  copy:
+    dest: "{{ ansible_facts['env']['HOME'] }}/.binaryninja/settings.json"
+    mode: '0644'
+    content: |
+      {
+          "ui.font.app.size": 13,
+          "ui.font.view.size": 13,
+          "ui.font.view.name": "JetBrainsMono Nerd Font",
+          "ui.font.view.style": "Regular"
+      }

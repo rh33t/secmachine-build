@@ -1,4 +1,42 @@
 ---
+- name: install VS Code repository prerequisites
+  apt:
+    name:
+      - ca-certificates
+      - python3-debian
+    state: latest
+  become: true
+
+- name: install VS Code repository
+  deb822_repository:
+    name: vscode
+    types:
+      - deb
+    uris:
+      - https://packages.microsoft.com/repos/code
+    suites:
+      - stable
+    components:
+      - main
+    architectures:
+      - amd64
+    signed_by: https://packages.microsoft.com/keys/microsoft.asc
+    state: present
+  register: vscode_repository
+  become: true
+
+- name: update apt cache for VS Code repository
+  apt:
+    update_cache: true
+  when: vscode_repository.changed
+  become: true
+
+- name: install VS Code
+  apt:
+    name: code
+    state: latest
+  become: true
+
 - name: ensure VS Code user config directory exists
   file:
     path: "/home/{{ ansible_facts['user_id'] }}/.config/Visual Studio Code/User"

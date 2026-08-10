@@ -4,7 +4,6 @@
     upgrade: dist
     update_cache: true
     cache_valid_time: 3600
-    autoremove: true
     autoclean: true
   become: true
 
@@ -37,7 +36,7 @@
       - nodejs
       - nfs-common
       - npm
-      - payloadallthethings
+      - payloadsallthethings
       - python3-pip
       - ranger
       - ripgrep

@@ -24,6 +24,7 @@
     name:
       - ca-certificates
       - curl
+      - python3-debian
     state: latest
   become: true
 
@@ -42,10 +43,27 @@
   become: true
 
 - name: install docker repository
-  apt_repository:
-    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ docker_distribution }} stable"
+  deb822_repository:
+    name: docker
+    types:
+      - deb
+    uris:
+      - https://download.docker.com/linux/debian
+    suites:
+      - "{{ docker_distribution }}"
+    components:
+      - stable
+    architectures:
+      - amd64
+    signed_by: /etc/apt/keyrings/docker.asc
     state: present
+  register: docker_repository
+  become: true
+
+- name: update apt cache for docker repository
+  apt:
     update_cache: true
+  when: docker_repository.changed
   become: true
 
 - name: upgrade all packages

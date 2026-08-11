@@ -11,12 +11,6 @@
     state: directory
     mode: '0755'
 
-- name: ensure preferences file exists
-  file:
-    path: "{{ ansible_facts['env']['HOME'] }}/.config/wireshark/preferences"
-    state: touch
-    mode: '0644'
-
 - name: ensure dumpcap is executable :(
   file:
     path: /usr/bin/dumpcap

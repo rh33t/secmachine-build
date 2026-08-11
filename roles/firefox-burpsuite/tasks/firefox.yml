@@ -1,6 +1,37 @@
-- name: "Updating Firefox Policies"
-  template: 
-    src: "templates/policies.json.j2"
-    dest: "/usr/share/firefox-esr/distribution/policies.json"
+- name: "Finding Firefox installations"
+  find:
+    paths: /usr/share
+    patterns: "firefox*"
+    file_type: directory
+    recurse: false
+  register: firefox_dirs
+
+# created rather than probed: a firefox build that lacks the directory would
+# otherwise be skipped silently while the run still reports success
+- name: "Ensuring Firefox distribution directories exist"
+  file:
+    path: "{{ item.path }}/distribution"
+    state: directory
+    mode: '0755'
+  loop: "{{ firefox_dirs.files }}"
+  loop_control:
+    label: "{{ item.path }}"
   become: true
   become_method: sudo
+
+# parrot ships both firefox and firefox-esr and defaults to the former, so
+# targeting firefox-esr alone would leave the default browser unconfigured
+- name: "Updating Firefox Policies"
+  template:
+    src: "templates/policies.json.j2"
+    dest: "{{ item.path }}/distribution/policies.json"
+  loop: "{{ firefox_dirs.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  become: true
+  become_method: sudo
+
+- name: "Warn when no Firefox installation was found"
+  debug:
+    msg: "no /usr/share/firefox* directory found, policies not deployed"
+  when: firefox_dirs.files | length == 0

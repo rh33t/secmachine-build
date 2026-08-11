@@ -6,21 +6,81 @@
     purge: true
   become: true
 
+- name: get latest go release
+  uri:
+    url: "{{ go_releases_url }}"
+    return_content: true
+  register: go_latest
+  # read-only lookup, and the version compare below needs it even in a dry run
+  check_mode: false
+  # an unreachable go.dev must not abort the play; an installed go is left alone
+  failed_when: false
+
+# the endpoint lists stable releases newest first, each carrying a per-file
+# sha256 that the download is verified against
+- name: set go release facts
+  set_fact:
+    go_version: "{{ go_release.version }}"
+    go_archive: "{{ go_file.filename }}"
+    go_sha256: "{{ go_file.sha256 }}"
+  vars:
+    go_arch: "{{ ansible_facts['architecture'] | replace('x86_64', 'amd64') | replace('aarch64', 'arm64') }}"
+    go_release: "{{ go_latest.json | first }}"
+    go_file: >-
+      {{ go_release.files
+         | selectattr('os', 'equalto', 'linux')
+         | selectattr('arch', 'equalto', go_arch)
+         | selectattr('kind', 'equalto', 'archive')
+         | first }}
+  when: go_latest.status | default(0) == 200
+
+- name: warn when the latest go version could not be determined
+  debug:
+    msg: "could not reach {{ go_releases_url }}, leaving go untouched"
+  when: go_version is not defined
+
 - name: check installed go version
   command: /usr/local/go/bin/go version
   register: go_check
   failed_when: false
   changed_when: false
+  # without this the command is skipped during a dry run and the compare below
+  # sees no installed version, reporting a reinstall that would not happen
+  check_mode: false
+
+- name: determine installed go version
+  set_fact:
+    go_installed: "{{ go_check.stdout | regex_search('go[0-9][0-9.]*') | default('', true) }}"
 
 - name: install go
-  when: go_check.rc != 0 or go_version not in go_check.stdout
+  when: go_version is defined and go_installed != go_version
   block:
-    - name: download and extract go
+    # fetched and verified first so a failed download leaves the install in place
+    - name: download go
+      get_url:
+        url: "https://go.dev/dl/{{ go_archive }}"
+        dest: "/tmp/{{ go_archive }}"
+        checksum: "sha256:{{ go_sha256 }}"
+        mode: '0644'
+
+    # extracting over an existing tree leaves files from the old release behind
+    - name: remove previous go installation
+      file:
+        path: /usr/local/go
+        state: absent
+      become: true
+
+    - name: extract go
       unarchive:
-        src: "{{ go_download_url }}"
+        src: "/tmp/{{ go_archive }}"
         dest: /usr/local
         remote_src: true
       become: true
+
+    - name: remove go tarball
+      file:
+        path: "/tmp/{{ go_archive }}"
+        state: absent
 
     - name: symlink go binaries
       file:

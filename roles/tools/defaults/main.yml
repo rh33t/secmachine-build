@@ -1,8 +1,7 @@
 ---
 install_pyenv: true
 
-go_version: "1.25.2"
-go_download_url: "https://go.dev/dl/go{{ go_version }}.linux-amd64.tar.gz"
+go_releases_url: "https://go.dev/dl/?mode=json"
 go_install_tools: false
 
 nvim_repo_url: "https://github.com/neovim/neovim.git"

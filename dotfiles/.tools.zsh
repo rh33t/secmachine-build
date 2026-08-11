@@ -1,6 +1,10 @@
 # Environment
 export HACKING_LAB="$HOME/work"
 
+# keeps the appends below idempotent when a zsh starts from an environment that
+# already has them, such as a nested shell or a tmux server spawning new panes
+typeset -U path PATH
+
 export PATH=$PATH:/sbin
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/.bin

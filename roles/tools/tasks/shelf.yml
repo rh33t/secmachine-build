@@ -4,12 +4,15 @@
   register: shelf_check
   failed_when: false
   changed_when: false
+  # read-only probes that the version compare below needs even in a dry run
+  check_mode: false
 
 - name: get latest shelf release from github
   uri:
     url: https://api.github.com/repos/kraaakilo/shelf/releases/latest
     return_content: true
   register: shelf_release
+  check_mode: false
 
 - name: set shelf latest version fact
   set_fact:

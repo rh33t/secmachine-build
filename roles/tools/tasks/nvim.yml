@@ -29,12 +29,15 @@
     fi
   register: nvim_check
   changed_when: false
+  # read-only probes that the version compare below needs even in a dry run
+  check_mode: false
 
 - name: Get latest stable version from GitHub
   uri:
     url: https://api.github.com/repos/neovim/neovim/releases/latest
     return_content: true
   register: latest_release
+  check_mode: false
 
 - name: Set latest version fact
   set_fact:

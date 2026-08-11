@@ -10,7 +10,24 @@
 
 - name: Include XFCE appearance settings
   import_tasks: xfce.yml
+  when: desktop_environment == 'xfce'
   tags:
     - desktop
     - appearance
     - xfce
+
+- name: Include MATE appearance settings
+  import_tasks: mate.yml
+  when: desktop_environment == 'mate'
+  tags:
+    - desktop
+    - appearance
+    - mate
+
+- name: Warn when no desktop configuration matches
+  debug:
+    msg: "desktop_environment is '{{ desktop_environment }}', expected xfce or mate: no desktop config applied"
+  when: desktop_environment not in ['xfce', 'mate']
+  tags:
+    - desktop
+    - appearance

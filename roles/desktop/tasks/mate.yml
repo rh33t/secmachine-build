@@ -1,0 +1,161 @@
+---
+# every dconf write needs the user session bus; without it the keys land on the
+# wrong bus and silently no-op while the play still reports success
+- name: Configure MATE
+  become: false
+  environment:
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
+  block:
+  - name: Set window button layout (close/minimize on right)
+    dconf:
+      key: /org/mate/marco/general/button-layout
+      value: "'{{ window_button_layout }}'"
+      state: present
+
+  - name: Set interface fonts
+    dconf:
+      key: "{{ item.key }}"
+      value: "'{{ item.value }}'"
+      state: present
+    loop:
+    - { key: '/org/mate/desktop/interface/font-name', value: '{{ system_font }}' }
+    - { key: '/org/mate/desktop/interface/monospace-font-name', value: '{{ monospace_font }}' }
+    - { key: '/org/mate/desktop/interface/document-font-name', value: '{{ document_font }}' }
+    - { key: '/org/mate/caja/desktop/font', value: '{{ desktop_font }}' }
+
+  - name: Show hidden files in caja
+    dconf:
+      key: /org/mate/caja/preferences/show-hidden-files
+      value: "true"
+      state: present
+
+  - name: Set GTK theme
+    dconf:
+      key: /org/mate/desktop/interface/gtk-theme
+      value: "'{{ gtk_theme }}'"
+      state: present
+
+  - name: Set Alacritty as default MATE terminal
+    dconf:
+      key: "{{ item.key }}"
+      value: "{{ item.value }}"
+      state: present
+    loop:
+    - { key: '/org/mate/desktop/applications/terminal/exec', value: "'alacritty'" }
+    - { key: '/org/mate/desktop/applications/terminal/exec-arg', value: "'-e'" }
+
+  # user-defined shortcuts here shadow the marco keybindings set below; the
+  # marco keys themselves need no reset since every one is assigned explicitly.
+  # reset -f only clears the user database while dconf reads a merged view, so
+  # entries from a system db survive and the state is compared either side of
+  # the reset rather than assumed
+  - name: Read custom keybindings before reset
+    ansible.builtin.command: dconf dump /org/mate/desktop/keybindings/
+    register: mate_kb_before
+    changed_when: false
+
+  - name: Reset stale custom keybindings
+    ansible.builtin.command: dconf reset -f /org/mate/desktop/keybindings/
+    when: mate_kb_before.stdout | length > 0
+    changed_when: false
+
+  - name: Confirm stale custom keybindings were cleared
+    ansible.builtin.command: dconf dump /org/mate/desktop/keybindings/
+    register: mate_kb_after
+    when: mate_kb_before.stdout | length > 0
+    changed_when: mate_kb_after.stdout != mate_kb_before.stdout
+
+  - name: Set window manager keybindings
+    dconf:
+      key: "{{ item.key }}"
+      value: "{{ item.value }}"
+      state: present
+    loop:
+    - { key: '/org/mate/marco/window-keybindings/close', value: "'<Super>q'" }
+    - { key: '/org/mate/marco/window-keybindings/toggle-fullscreen', value: "'<Super>f'" }
+    - { key: '/org/mate/marco/window-keybindings/maximize', value: "'<Super>Up'" }
+    - { key: '/org/mate/marco/window-keybindings/minimize', value: "'<Super>Down'" }
+    - { key: '/org/mate/marco/window-keybindings/tile-to-side-w', value: "'<Super>Left'" }
+    - { key: '/org/mate/marco/window-keybindings/tile-to-side-e', value: "'<Super>Right'" }
+    # marco's own defaults rather than the XFCE numpad binds, which are
+    # unreachable on a keyboard without a numpad
+    - { key: '/org/mate/marco/window-keybindings/tile-to-corner-nw', value: "'<Alt><Super>Left'" }
+    - { key: '/org/mate/marco/window-keybindings/tile-to-corner-ne', value: "'<Alt><Super>Right'" }
+    - { key: '/org/mate/marco/window-keybindings/tile-to-corner-sw', value: "'<Shift><Alt><Super>Left'" }
+    - { key: '/org/mate/marco/window-keybindings/tile-to-corner-se', value: "'<Shift><Alt><Super>Right'" }
+    - { key: '/org/mate/marco/global-keybindings/show-desktop', value: "'<Super>d'" }
+    - { key: '/org/mate/marco/global-keybindings/switch-windows', value: "'<Alt>Tab'" }
+    - { key: '/org/mate/marco/global-keybindings/switch-windows-backward', value: "'<Alt><Shift>Tab'" }
+    - { key: '/org/mate/marco/global-keybindings/cycle-windows', value: "'<Super>Tab'" }
+    # frees <Alt>space, which marco assigns to the window menu by default
+    - { key: '/org/mate/marco/window-keybindings/activate-window-menu', value: "'disabled'" }
+
+  - name: Set workspace switch keybindings
+    dconf:
+      key: "/org/mate/marco/global-keybindings/switch-to-workspace-{{ item }}"
+      value: "'<Primary><Alt>{{ item }}'"
+      state: present
+    loop: "{{ range(1, 5) | list }}"
+
+  - name: Set workspace move keybindings
+    dconf:
+      key: "/org/mate/marco/window-keybindings/move-to-workspace-{{ item }}"
+      value: "'<Primary><Super>{{ item }}'"
+      state: present
+    loop: "{{ range(1, 5) | list }}"
+
+  # marco has 12 command slots. Slots 1-8 hold the distro's own shortcuts (lock
+  # screen, area screenshot, caja, terminal, control center, search, system
+  # monitor), so 9-12 is reserved for ours: every slot in it is either assigned
+  # here or reset, and nothing outside it is touched.
+  # <Super>e -> caja already comes from the distro's stock command-3.
+  - name: Configure custom command shortcuts
+    vars:
+      slot_start: 9
+      slot_end: 12
+      custom_commands:
+        - { accel: '<Super>Return', command: 'alacritty -e tmux new -A -s daily' }
+        - { accel: '<Super>space', command: 'rofi -show drun' }
+        - { accel: '<Super>v', command: 'copyq toggle' }
+        - { accel: '<Alt>space', command: 'rofi -show window' }
+    block:
+    # writing past the last slot silently does nothing, so catch it here
+    - name: Check the reserved command slots fit marco's range
+      assert:
+        that: slot_start + (custom_commands | length) - 1 <= slot_end
+        fail_msg: >-
+          {{ custom_commands | length }} commands starting at slot {{ slot_start }}
+          overflow marco's last slot ({{ slot_end }})
+
+    - name: Set custom command keybindings
+      dconf:
+        key: "/org/mate/marco/global-keybindings/run-command-{{ slot_start + idx }}"
+        value: "'{{ item.accel }}'"
+        state: present
+      loop: "{{ custom_commands }}"
+      loop_control:
+        index_var: idx
+        label: "run-command-{{ slot_start + idx }} = {{ item.accel }}"
+
+    - name: Set custom commands
+      dconf:
+        key: "/org/mate/marco/keybinding-commands/command-{{ slot_start + idx }}"
+        value: "'{{ item.command }}'"
+        state: present
+      loop: "{{ custom_commands }}"
+      loop_control:
+        index_var: idx
+        label: "command-{{ slot_start + idx }} = {{ item.command }}"
+
+    - name: Clear unused slots in the reserved range
+      dconf:
+        key: "{{ item.1 }}{{ item.0 }}"
+        state: absent
+      loop: "{{ unused_slots | product(slot_prefixes) | list }}"
+      loop_control:
+        label: "{{ item.1 }}{{ item.0 }}"
+      vars:
+        unused_slots: "{{ range(slot_start + (custom_commands | length), slot_end + 1) | list }}"
+        slot_prefixes:
+          - /org/mate/marco/global-keybindings/run-command-
+          - /org/mate/marco/keybinding-commands/command-

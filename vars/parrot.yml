@@ -1,0 +1,7 @@
+---
+alacritty_theme: matrix
+gtk_theme: 'ARK-Dark'
+
+# parrot 7.x is debian 13; not derivable from ansible_distribution_* facts,
+# which report parrot's own versioning (major_version 7, release "echo")
+docker_distribution: "trixie"

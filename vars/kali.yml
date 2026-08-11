@@ -1,0 +1,6 @@
+---
+alacritty_theme: kali
+gtk_theme: 'Kali-Dark'
+
+# kali rolling has no docker repo of its own, so track a debian stable suite
+docker_distribution: "bookworm"

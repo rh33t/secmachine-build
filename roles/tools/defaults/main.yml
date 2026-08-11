@@ -1,6 +1,4 @@
 ---
-docker_distribution: "bookworm"
-
 install_pyenv: true
 
 go_version: "1.25.2"

@@ -3,6 +3,64 @@
   hosts: localhost
   connection: local
 
+  # detection runs on every invocation, including tag-filtered ones, because
+  # distro_id and desktop_environment gate tasks in several roles
+  pre_tasks:
+  - name: detect distribution
+    set_fact:
+      distro_id: >-
+        {{ 'parrot' if 'Parrot' in ansible_facts['distribution']
+           else 'kali' if 'Kali' in ansible_facts['distribution']
+           else ansible_facts['distribution'] | lower }}
+    tags: always
+
+  - name: check the distribution is supported
+    assert:
+      that: distro_id in ['kali', 'parrot']
+      fail_msg: >-
+        {{ ansible_facts['distribution'] }} is not supported; this build targets
+        Kali and Parrot. Add vars/{{ distro_id }}.yml to extend it.
+    tags: always
+
+  - name: load distribution variables
+    include_vars: "vars/{{ distro_id }}.yml"
+    tags: always
+
+  - name: look for desktop session binaries
+    stat:
+      path: "/usr/bin/{{ item }}"
+    register: session_binaries
+    loop:
+    - xfce4-session
+    - mate-session
+    tags: always
+
+  - name: detect desktop environment
+    set_fact:
+      # the live session wins outright: a Kali box ships xfce4-session even when
+      # the user is logged into MATE, so binaries are only a fallback
+      desktop_environment: >-
+        {{ 'xfce' if 'xfce' in xdg_desktop
+           else 'mate' if 'mate' in xdg_desktop
+           else 'xfce' if 'xfce4-session' in found_sessions
+           else 'mate' if 'mate-session' in found_sessions
+           else 'unknown' }}
+    vars:
+      # XDG_CURRENT_DESKTOP is uppercase on parrot ("MATE") and may carry a
+      # prefix elsewhere ("ubuntu:GNOME"), so match case-folded substrings
+      xdg_desktop: "{{ ansible_facts['env']['XDG_CURRENT_DESKTOP'] | default('') | lower }}"
+      found_sessions: "{{ session_binaries.results | selectattr('stat.exists') | map(attribute='item') | list }}"
+    when: not desktop_environment
+    tags: always
+
+  - name: report detection results
+    debug:
+      msg:
+      - "distribution: {{ ansible_facts['distribution'] }} -> distro_id={{ distro_id }}"
+      - "desktop: {{ desktop_environment }}"
+      - "alacritty theme: {{ alacritty_theme }}, docker suite: {{ docker_distribution }}"
+    tags: always
+
   roles:
   - system
   - tools

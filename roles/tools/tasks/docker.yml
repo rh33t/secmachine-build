@@ -1,10 +1,11 @@
 ---
 - name: remove unofficial docker packages
   apt:
-    name: 
+    name:
       - docker.io
       - docker-compose
       - docker-doc
+      - docker-buildx
       - podman-docker
     state: absent
   register: docker_remove
@@ -42,6 +43,15 @@
     mode: '0644'
   become: true
 
+# the pre-deb822 apt_repository task named its file after the URL; left behind
+# it becomes a second docker source pinned to a different suite
+- name: remove legacy docker apt source
+  file:
+    path: /etc/apt/sources.list.d/download_docker_com_linux_debian.list
+    state: absent
+  register: docker_legacy_repo
+  become: true
+
 - name: install docker repository
   deb822_repository:
     name: docker
@@ -54,7 +64,7 @@
     components:
       - stable
     architectures:
-      - amd64
+      - "{{ ansible_facts['architecture'] | replace('x86_64', 'amd64') | replace('aarch64', 'arm64') }}"
     signed_by: /etc/apt/keyrings/docker.asc
     state: present
   register: docker_repository
@@ -63,13 +73,7 @@
 - name: update apt cache for docker repository
   apt:
     update_cache: true
-  when: docker_repository.changed
-  become: true
-
-- name: upgrade all packages
-  apt: 
-    upgrade: true 
-    force_apt_get: true
+  when: docker_repository.changed or docker_legacy_repo.changed
   become: true
 
 - name: install docker packages

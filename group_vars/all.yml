@@ -2,3 +2,6 @@
 # so that we can adjust certain settings accordingly
 baremetal: false
 install_omz: false
+
+# empty means autodetect from the running session; set to xfce or mate to force
+desktop_environment: ""

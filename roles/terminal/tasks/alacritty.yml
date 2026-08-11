@@ -7,6 +7,6 @@
 
 - name: Deploy Alacritty configuration
   copy:
-    src: alacritty.toml
+    src: "alacritty-{{ alacritty_theme }}.toml"
     dest: "{{ ansible_facts['env']['HOME'] }}/.config/alacritty/alacritty.toml"
     mode: '0644'

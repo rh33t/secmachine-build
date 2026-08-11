@@ -8,13 +8,6 @@
   become: true
   tags: fonts
 
-- name: create temporary download directory
-  file:
-    path: "{{ temp_base_dir }}"
-    state: directory
-    mode: "0755"
-  tags: fonts
-
 - name: check if fonts are already installed
   stat:
     path: "{{ item.dir }}"
@@ -22,6 +15,21 @@
   loop: "{{ fonts }}"
   loop_control:
     label: "{{ item.name }}"
+  tags: fonts
+
+# scratch space is only needed when something is actually downloaded, otherwise
+# creating and deleting it makes every run report changed
+- name: set whether any font is missing
+  set_fact:
+    fonts_missing: "{{ fonts_installed.results | selectattr('stat.exists', 'equalto', false) | list | length > 0 }}"
+  tags: fonts
+
+- name: create temporary download directory
+  file:
+    path: "{{ temp_base_dir }}"
+    state: directory
+    mode: "0755"
+  when: fonts_missing
   tags: fonts
 
 - name: create system font directories
@@ -62,17 +70,9 @@
   become: true
   tags: fonts
 
-- name: set gsettings monospace font to jetbrains mono
-  community.general.dconf:
-    key: "/org/gnome/desktop/interface/monospace-font-name"
-    value: "'JetBrainsMono NF 13'"
-    state: present
-  become: false
-  tags: fonts
-
 - name: update font cache
   command: fc-cache -f -v
-  when: fonts_installed.results | selectattr('stat.exists', 'equalto', false) | list | length > 0
+  when: fonts_missing
   changed_when: true
   become: true
   tags: fonts
@@ -81,4 +81,5 @@
   file:
     path: "{{ temp_base_dir }}"
     state: absent
+  when: fonts_missing
   tags: fonts

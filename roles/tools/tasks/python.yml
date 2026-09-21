@@ -33,18 +33,11 @@
     creates: "~/.pyenv"
   when: install_pyenv | default(false) | bool
 
-- name: install python security tools via pipx
-  community.general.pipx:
-    name: "{{ item.name }}"
-    source: "{{ item.url | default(omit) }}"
-    state: latest
-  loop:
-    - { name: "impacket", url: "git+https://github.com/fortra/impacket.git" }
-
-- name: install python ctf tools via pipx
-  community.general.pipx:
-    name: "{{ item.name }}"
-    source: "{{ item.url | default(omit) }}"
-    state: latest
-  loop:
-    - { name: "pwntools" }
+# apt ships these as importable modules as well as CLIs, which a pipx venv cannot do
+- name: install python security tools
+  apt:
+    name:
+      - python3-impacket
+      - python3-pwntools
+    state: present
+  become: true

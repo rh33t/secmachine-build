@@ -17,6 +17,12 @@
     - tools
     - python
 
+- name: install uv
+  import_tasks: uv.yml
+  tags:
+    - tools
+    - uv
+
 - name: install ruby gems
   import_tasks: gems.yml
   tags:

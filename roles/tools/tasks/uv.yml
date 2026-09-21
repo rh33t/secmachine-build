@@ -1,0 +1,62 @@
+---
+- name: get latest uv release
+  uri:
+    url: "{{ uv_releases_url }}"
+    return_content: true
+  register: uv_latest
+  # read-only lookup, and the version compare below needs it even in a dry run
+  check_mode: false
+  # an unreachable github must not abort the play; an installed uv is left alone
+  failed_when: false
+
+- name: set uv release facts
+  set_fact:
+    uv_version: "{{ uv_latest.json.tag_name }}"
+    # the release names its assets by rust target triple, which starts with the
+    # same architecture string ansible reports
+    uv_archive: "uv-{{ ansible_facts['architecture'] }}-unknown-linux-gnu"
+  when: uv_latest.status | default(0) == 200
+
+- name: warn when the latest uv version could not be determined
+  debug:
+    msg: "could not reach {{ uv_releases_url }}, leaving uv untouched"
+  when: uv_version is not defined
+
+- name: check installed uv version
+  command: uv --version
+  register: uv_check
+  failed_when: false
+  changed_when: false
+  # without this the command is skipped during a dry run and the compare below
+  # sees no installed version, reporting a reinstall that would not happen
+  check_mode: false
+
+- name: determine installed uv version
+  set_fact:
+    uv_installed: "{{ uv_check.stdout | regex_search('[0-9][0-9.]+') | default('', true) }}"
+
+- name: install uv
+  when: uv_version is defined and uv_installed != uv_version
+  block:
+    # each archive ships a sha256 beside it, which get_url matches by filename
+    - name: download uv
+      get_url:
+        url: "{{ uv_download_url }}/{{ uv_version }}/{{ uv_archive }}.tar.gz"
+        dest: "/tmp/{{ uv_archive }}.tar.gz"
+        checksum: "sha256:{{ uv_download_url }}/{{ uv_version }}/{{ uv_archive }}.tar.gz.sha256"
+        mode: '0644'
+
+    # the archive carries uv and uvx inside a versioned directory, and already
+    # marks both executable
+    - name: extract uv
+      unarchive:
+        src: "/tmp/{{ uv_archive }}.tar.gz"
+        dest: /usr/local/bin
+        remote_src: true
+        extra_opts: [--strip-components=1]
+      become: true
+
+    - name: remove uv tarball
+      file:
+        path: "/tmp/{{ uv_archive }}.tar.gz"
+        state: absent

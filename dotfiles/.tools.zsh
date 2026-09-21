@@ -16,10 +16,6 @@ export PATH=$PATH:$HACKING_LAB/tools/custom/
 export MANPAGER='nvim +Man!'
 
 # Tool Init
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - zsh)"
-
 eval "$(zoxide init zsh)"
 eval "$(fzf --zsh)"
 

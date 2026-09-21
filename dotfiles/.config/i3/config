@@ -1,0 +1,126 @@
+set $mod Mod4
+set $alt Mod1
+set $term alacritty
+set $exit i3-nagbar -t warning -m 'Exit i3?' -B 'Exit' 'i3-msg exit'
+
+set $bg      #23252e
+set $fg      #ffffff
+set $dim     #767b85
+set $accent  #367bf0
+set $urgent  #d41919
+
+font pango:JetBrainsMono Nerd Font 10
+
+default_border pixel 2
+default_floating_border pixel 2
+focus_follows_mouse yes
+floating_modifier $mod
+
+#                       border  background text  indicator child_border
+client.focused          $accent $accent    $bg   $accent   $accent
+client.focused_inactive $bg     $bg        $dim  $bg       $bg
+client.unfocused        $bg     $bg        $dim  $bg       $bg
+client.urgent           $urgent $urgent    $fg   $urgent   $urgent
+
+# Launchers
+bindsym $mod+Return exec --no-startup-id $term -e tmux new -A -s daily
+bindsym $mod+Shift+Return exec --no-startup-id x-www-browser
+bindsym Control+$alt+t exec --no-startup-id $term
+bindsym $mod+space exec --no-startup-id rofi -show drun
+bindsym $alt+space exec --no-startup-id rofi -show window
+bindsym $mod+v exec --no-startup-id copyq toggle
+bindsym $mod+e exec --no-startup-id thunar
+bindsym $mod+l exec --no-startup-id i3lock -c 23252e
+
+# Screenshots
+bindsym Print exec --no-startup-id maim ~/Pictures/$(date +%F_%H-%M-%S).png
+bindsym Shift+Print exec --no-startup-id maim -s ~/Pictures/$(date +%F_%H-%M-%S).png
+bindsym Control+Print exec --no-startup-id maim | xclip -selection clipboard -t image/png
+bindsym Control+Shift+Print exec --no-startup-id maim -s | xclip -selection clipboard -t image/png
+
+# Windows
+bindsym $mod+q kill
+bindsym $mod+f fullscreen toggle
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+a focus parent
+bindsym Control+$alt+Escape exec --no-startup-id xkill
+
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# $mod+v is copyq, so the vertical split takes shift
+bindsym $mod+b split h
+bindsym $mod+Shift+v split v
+
+bindsym $mod+s layout stacking
+bindsym $mod+t layout tabbed
+bindsym $mod+x layout toggle split
+
+mode "resize" {
+    bindsym Left resize shrink width 10 px
+    bindsym Down resize grow height 10 px
+    bindsym Up resize shrink height 10 px
+    bindsym Right resize grow width 10 px
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+# Workspaces
+# fr layout: digits sit on the shifted level, unreachable by a $mod-only bindsym
+bindcode $mod+10 workspace number 1
+bindcode $mod+11 workspace number 2
+bindcode $mod+12 workspace number 3
+bindcode $mod+13 workspace number 4
+bindcode $mod+14 workspace number 5
+bindcode $mod+15 workspace number 6
+bindcode $mod+16 workspace number 7
+bindcode $mod+17 workspace number 8
+bindcode $mod+18 workspace number 9
+bindcode $mod+19 workspace number 10
+
+bindcode $mod+Shift+10 move container to workspace number 1
+bindcode $mod+Shift+11 move container to workspace number 2
+bindcode $mod+Shift+12 move container to workspace number 3
+bindcode $mod+Shift+13 move container to workspace number 4
+bindcode $mod+Shift+14 move container to workspace number 5
+bindcode $mod+Shift+15 move container to workspace number 6
+bindcode $mod+Shift+16 move container to workspace number 7
+bindcode $mod+Shift+17 move container to workspace number 8
+bindcode $mod+Shift+18 move container to workspace number 9
+bindcode $mod+Shift+19 move container to workspace number 10
+
+# Session
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+bindsym $mod+Shift+b exec --no-startup-id ~/.config/polybar/launch.sh
+bindsym $mod+Shift+e exec --no-startup-id $exit
+bindsym Control+$alt+Delete exec --no-startup-id $exit
+
+# Window rules
+# the splash shares this class; only the main window has a version in its title
+for_window [class="burp-StartBurp"] floating enable
+for_window [class="burp-StartBurp" title=".* v"] floating disable
+for_window [window_role="pop-up"] floating enable
+# split in three: chained after floating enable, the resize runs before i3 has placed the window and is lost
+for_window [class="copyq"] floating enable
+for_window [class="copyq"] resize set 30 ppt 70 ppt
+for_window [class="copyq"] move position center
+
+# Autostart
+exec_always --no-startup-id xrdb -load ~/.Xresources
+exec_always --no-startup-id xsetroot -solid "$bg"
+exec_always --no-startup-id ~/.config/polybar/launch.sh
+# i3 ignores autostart .desktop files
+exec --no-startup-id copyq --start-server
+# spawns vmtoolsd -n vmusr, without which the guest never follows a host window resize
+exec --no-startup-id vmware-user-suid-wrapper
+exec --no-startup-id ~/.bin/vmware-autofit.sh
+exec --no-startup-id nm-applet

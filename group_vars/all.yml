@@ -3,5 +3,6 @@
 baremetal: false
 install_omz: false
 
-# empty means autodetect from the running session; set to xfce or mate to force
+# empty means autodetect from the running session; set to xfce, mate or i3 to
+# force. i3 is never detected: it is not installed yet on a fresh VM
 desktop_environment: ""

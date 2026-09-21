@@ -1,0 +1,38 @@
+---
+- name: Install i3 session packages
+  apt:
+    name:
+      - i3
+      - polybar
+      - dunst
+      - i3lock
+      - maim
+      - xclip
+      - x11-xserver-utils
+      - thunar
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+
+- name: Ensure the screenshot directory exists
+  file:
+    path: "{{ ansible_facts['env']['HOME'] }}/Pictures"
+    state: directory
+    mode: '0755'
+
+- name: Ensure the GTK 3 config directory exists
+  file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/gtk-3.0"
+    state: directory
+    mode: '0755'
+
+# i3 runs no xsettings daemon, so GTK apps read these directly
+- name: Deploy GTK theme settings
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/{{ item.dest }}"
+    mode: '0644'
+  loop:
+    - { src: gtk-3.0-settings.ini.j2, dest: .config/gtk-3.0/settings.ini }
+    - { src: gtkrc-2.0.j2, dest: .gtkrc-2.0 }

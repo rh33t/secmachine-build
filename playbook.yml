@@ -3,6 +3,12 @@
   hosts: localhost
   connection: local
 
+  vars:
+    desktop_sessions: [i3, xfce, mate]
+    desktop_binaries:
+      xfce4-session: xfce
+      mate-session: mate
+
   # detection runs on every invocation, including tag-filtered ones, because
   # distro_id and desktop_environment gate tasks in several roles
   pre_tasks:
@@ -30,26 +36,25 @@
     stat:
       path: "/usr/bin/{{ item }}"
     register: session_binaries
-    loop:
-    - xfce4-session
-    - mate-session
+    loop: "{{ desktop_binaries.keys() | list }}"
     tags: always
 
-  - name: detect desktop environment
+  - name: detect the desktop environment from the running session
     set_fact:
-      # the live session wins outright: a Kali box ships xfce4-session even when
-      # the user is logged into MATE, so binaries are only a fallback
-      desktop_environment: >-
-        {{ 'xfce' if 'xfce' in xdg_desktop
-           else 'mate' if 'mate' in xdg_desktop
-           else 'xfce' if 'xfce4-session' in found_sessions
-           else 'mate' if 'mate-session' in found_sessions
-           else 'unknown' }}
-    vars:
       # XDG_CURRENT_DESKTOP is uppercase on parrot ("MATE") and may carry a
       # prefix elsewhere ("ubuntu:GNOME"), so match case-folded substrings
+      desktop_environment: "{{ desktop_sessions | select('in', xdg_desktop) | first | default('') }}"
+    vars:
       xdg_desktop: "{{ ansible_facts['env']['XDG_CURRENT_DESKTOP'] | default('') | lower }}"
-      found_sessions: "{{ session_binaries.results | selectattr('stat.exists') | map(attribute='item') | list }}"
+    when: not desktop_environment
+    tags: always
+
+  - name: fall back to an installed session binary
+    set_fact:
+      # a Kali box ships xfce4-session even when the user is logged into MATE
+      desktop_environment: >-
+        {{ session_binaries.results | selectattr('stat.exists') | map(attribute='item')
+           | map('extract', desktop_binaries) | first | default('unknown') }}
     when: not desktop_environment
     tags: always
 

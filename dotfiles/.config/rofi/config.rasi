@@ -10,8 +10,72 @@ configuration {
   font: "JetBrainsMono Nerd Font 13";
 }
 
-@theme "default"
+// palette shared with ~/.config/polybar/config.ini
+* {
+  background: #23252e;
+  foreground: #e6e6e6;
+  dim:        #767b85;
+  accent:     #367bf0;
+  urgent:     #d41919;
+
+  background-color: transparent;
+  text-color:       @foreground;
+
+  normal-background:           @background;
+  normal-foreground:           @foreground;
+  alternate-normal-background: @background;
+  alternate-normal-foreground: @foreground;
+  selected-normal-background:  @accent;
+  selected-normal-foreground:  @background;
+
+  urgent-background:           @background;
+  urgent-foreground:           @urgent;
+  alternate-urgent-background: @background;
+  alternate-urgent-foreground: @urgent;
+  selected-urgent-background:  @urgent;
+  selected-urgent-foreground:  @background;
+
+  active-background:           @background;
+  active-foreground:           @accent;
+  alternate-active-background: @background;
+  alternate-active-foreground: @accent;
+  selected-active-background:  @accent;
+  selected-active-foreground:  @background;
+
+  separatorcolor: @dim;
+}
 
 window {
-  width: 600px;
+  width:            600px;
+  background-color: @background;
+  border:           2px;
+  border-color:     @accent;
+  padding:          8px;
+}
+
+inputbar {
+  spacing: 8px;
+  padding: 4px 4px 8px 4px;
+}
+
+prompt {
+  text-color: @accent;
+}
+
+listview {
+  lines:   10;
+  spacing: 2px;
+}
+
+element {
+  padding: 4px 8px;
+}
+
+element-icon {
+  size:    1em;
+  padding: 0 8px 0 0;
+}
+
+element-text {
+  text-color: inherit;
 }

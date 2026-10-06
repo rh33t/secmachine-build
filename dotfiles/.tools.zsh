@@ -10,8 +10,8 @@ export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/.bin
 export PATH=$PATH:$HOME/.cargo/bin
 export PATH=$PATH:$HOME/go/bin
-export PATH=$PATH:$HACKING_LAB/tools/built
-export PATH=$PATH:$HACKING_LAB/tools/custom/
+export PATH=$PATH:$HACKING_LAB/tools/bin
+export PATH=$PATH:$HACKING_LAB/tools/arsenal
 
 export MANPAGER='nvim +Man!'
 
@@ -49,9 +49,9 @@ alias pbcopy='xsel --input --clipboard'
 alias pbpaste='xsel --output --clipboard'
 
 # Network
-alias ssha='ssh -i $HACKING_LAB/configs/ssh/pwnie -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+alias ssha='ssh -i $HACKING_LAB/configs/secrets/ssh/pwnie -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 alias sshu='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
-alias sshi='ssh -i $HACKING_LAB/configs/ssh/pwnie'
+alias sshi='ssh -i $HACKING_LAB/configs/secrets/ssh/pwnie'
 alias ncl='nc -lnvp'
 alias openports='ss -tlnp'
 

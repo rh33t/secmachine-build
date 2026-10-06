@@ -4,20 +4,23 @@ set -uo pipefail
 WORKDIR="${HACKING_LAB:-$HOME/work}"
 
 DIRECTORIES=(
-  "pentests/clients"
-  "pentests/internal"
-  "tools/built"
-  "tools/custom"
-  "tools/utils"
+  "engagements"
+  "projects"
+  "tools/bin"
+  "tools/vendor"
+  "tools/arsenal"
   "training/boxes"
   "training/labs"
   "training/challenges"
-  "wordlists"
+  "resources/wordlists"
+  "resources/docs"
   "configs/vpn"
-  "configs/ssh"
+  "configs/burpsuite"
   "configs/clipboard"
-  "docs/templates"
-  "reports"
+  "configs/secrets/ssh"
+  "configs/secrets/tls"
+  "configs/secrets/android"
+  "configs/secrets/licenses"
   "archive"
 )
 
@@ -28,4 +31,3 @@ for dir in "${DIRECTORIES[@]}"; do
 done
 
 echo "[+] Done: $WORKDIR"
-
